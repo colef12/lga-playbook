@@ -966,9 +966,11 @@ const URLS = {
   rw: icao => 'https://atis.info/api/K' + icao
 };
 
+// Pages serves Stable at / and the Lab at /lab/ on one site: keep their saved settings apart.
+const STORE_PREFIX = /\/lab\//.test(location.pathname) ? 'lgapblab.' : 'lgapb.';
 const store = {
-  get(k, d){ try{ const v = localStorage.getItem('lgapb.'+k); return v === null ? d : JSON.parse(v); }catch(e){ return d; } },
-  set(k, v){ try{ localStorage.setItem('lgapb.'+k, JSON.stringify(v)); }catch(e){} }
+  get(k, d){ try{ const v = localStorage.getItem(STORE_PREFIX+k); return v === null ? d : JSON.parse(v); }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem(STORE_PREFIX+k, JSON.stringify(v)); }catch(e){} }
 };
 
 const state = {
