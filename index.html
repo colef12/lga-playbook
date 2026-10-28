@@ -73,10 +73,10 @@ label.chk{display:inline-flex;align-items:center;gap:6px;font-size:.85rem;color:
 .refbtn{display:flex;flex-direction:column;align-items:flex-start;gap:1px;text-align:left;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:4px;padding:7px 9px;cursor:pointer;min-height:44px}
 .refbtn:hover{border-color:var(--accent)}
 .refbtn:last-child:nth-child(odd){grid-column:1 / -1}
-a.sopbtn{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:10px;text-decoration:none;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);border-radius:4px;padding:7px 10px;min-height:44px}
-a.sopbtn:hover{filter:brightness(1.08)}
-a.sopbtn .rb-s{color:inherit;opacity:.85}
-a.sopbtn svg{flex:0 0 auto}
+a.refbtn.sop{text-decoration:none;border-color:var(--accent);background:var(--accent);color:var(--accent-ink)}
+a.refbtn.sop:hover{filter:brightness(1.08)}
+a.refbtn.sop .rb-s{color:inherit;opacity:.85}
+a.refbtn.sop .rb-t{display:inline-flex;align-items:center;gap:6px}
 .rb-t{font:700 1rem var(--f-display);letter-spacing:.02em}
 .rb-s{font-size:.74rem;color:var(--muted)}
 dialog.pop{border:1px solid var(--line);border-radius:6px;padding:0;background:var(--paper);color:var(--ink);width:min(920px,calc(100vw - 32px));max-height:min(86vh,900px);box-shadow:0 18px 48px rgba(10,20,30,.35)}
@@ -300,11 +300,8 @@ footer{font-size:.8rem;color:var(--muted)}
         <button type="button" class="refbtn" data-pop="amend"><span class="rb-t">Common Amendments</span><span class="rb-s">Airway and exit joins</span></button>
         <button type="button" class="refbtn" data-pop="prd"><span class="rb-t">ZNY PRD</span><span class="rb-s">Preferred routes</span></button>
         <button type="button" class="refbtn" data-pop="isect"><span class="rb-t">Intersection Distances</span><span class="rb-s">Usable runway lengths</span></button>
+        <a class="refbtn sop" href="https://wiki.nyartcc.org/wiki/LGA_SOP" target="_blank" rel="noopener"><span class="rb-t">LGA SOP <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h4v4M13 3 7 9M11 9.5V13H3V5h3.5"/></svg></span><span class="rb-s">Full SOP, new tab</span></a>
       </div>
-      <a class="sopbtn" href="https://wiki.nyartcc.org/wiki/LGA_SOP" target="_blank" rel="noopener">
-        <span><span class="rb-t">LGA SOP</span> <span class="rb-s">Full vZNY SOP · opens in a new tab</span></span>
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h4v4M13 3 7 9M11 9.5V13H3V5h3.5"/></svg>
-      </a>
     </article>
   </section>
 
