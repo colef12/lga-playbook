@@ -189,7 +189,20 @@ th{font:600 .74rem var(--f-body);text-transform:uppercase;letter-spacing:.07em;c
 td.num,.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
 .active table{background:color-mix(in srgb,var(--paper) 55%,transparent)}
 /* pages */
-.rail{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}
+.rail{display:flex;flex-wrap:wrap;gap:6px;padding-bottom:2px}
+/* config pages 1-9 live behind one dropdown button */
+.rail .ddwrap{position:relative;flex:0 0 auto;display:flex}
+.rail button.dd{font:inherit;cursor:pointer;text-align:left;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:6px 28px 6px 10px;display:flex;flex-direction:column;gap:1px;min-width:86px;position:relative}
+.rail button.dd::after{content:"";position:absolute;right:10px;top:50%;width:7px;height:7px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:translateY(-70%) rotate(45deg)}
+.rail button.dd[aria-expanded="true"]::after{transform:translateY(-20%) rotate(-135deg)}
+.rail button.dd .n{font:600 .7rem var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.rail button.dd .r{font:700 1.05rem var(--f-display);letter-spacing:.02em;white-space:nowrap}
+.rail button.dd.cur{border-color:var(--accent);box-shadow:inset 0 -3px 0 var(--accent)}
+.rail button.dd.live{background:var(--strip);border-color:var(--strip-line)}
+.rail button.dd.live .n::after{content:" · LIVE";color:var(--pass)}
+.rail .ddmenu{position:absolute;top:calc(100% + 4px);left:0;z-index:30;background:var(--paper);border:1px solid var(--line);border-radius:6px;box-shadow:0 12px 32px rgba(10,20,30,.25);padding:6px;display:flex;flex-direction:column;gap:4px;min-width:260px;max-width:calc(100vw - 32px)}
+.rail .ddmenu[hidden]{display:none}
+.rail .ddmenu a{flex-direction:row;align-items:center;justify-content:space-between;gap:14px;min-width:0;min-height:44px}
 .rail a{flex:0 0 auto;text-decoration:none;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:6px 10px;display:flex;flex-direction:column;gap:1px;min-width:86px}
 .rail a .n{font:600 .7rem var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .rail a .r{font:700 1.05rem var(--f-display);letter-spacing:.02em;white-space:nowrap}
@@ -1290,12 +1303,47 @@ function setLivePage(id){
 }
 
 let userPickedPage = !!location.hash && PAGES.some(p => '#' + p.id === location.hash);
+// Pages 1-9 (the runway configurations) sit behind one dropdown button; every other page keeps its own tab.
+const DD_IDS = ['p1','p2','p3','p4','p5','p6','p7','p8','p9'];
+let ddOpen = false;
+function railLink(p, cur){
+  return '<a href="#' + p.id + '"' + (p.id === cur ? ' aria-current="page"' : '') + (p.id === state.livePage ? ' class="live"' : '') + '>' +
+    '<span class="n">' + esc(p.n) + '</span><span class="r">' + esc(p.r) + '</span></a>';
+}
 function renderRail(){
   const cur = currentPage();
-  $('rail').innerHTML = PAGES.map(p =>
-    '<a href="#' + p.id + '"' + (p.id === cur ? ' aria-current="page"' : '') + (p.id === state.livePage ? ' class="live"' : '') + '>' +
-    '<span class="n">' + esc(p.n) + '</span><span class="r">' + esc(p.r) + '</span></a>').join('');
+  const inDD = PAGES.filter(p => DD_IDS.includes(p.id));
+  const shown = inDD.find(p => p.id === cur);          // the config page on screen, if any
+  const live = inDD.find(p => p.id === state.livePage); // the config page the ATIS points to, if any
+  const face = shown || live;
+  const btn = '<div class="ddwrap">' +
+    '<button type="button" class="dd' + (shown ? ' cur' : '') + (live ? ' live' : '') + '" id="dd-btn" aria-haspopup="true" aria-expanded="' + ddOpen + '" aria-controls="dd-menu">' +
+    '<span class="n">' + esc(face ? face.n : 'Pages 1–9') + '</span><span class="r">' + esc(face ? face.r : 'Configurations') + '</span></button>' +
+    '<div class="ddmenu" id="dd-menu"' + (ddOpen ? '' : ' hidden') + '>' + inDD.map(p => railLink(p, cur)).join('') + '</div></div>';
+  let html = '', placed = false;
+  PAGES.forEach(p => {
+    if (DD_IDS.includes(p.id)){ if (!placed){ html += btn; placed = true; } return; }
+    html += railLink(p, cur);
+  });
+  $('rail').innerHTML = html;
 }
+function setDD(open, focusBtn){
+  ddOpen = open;
+  const b = $('dd-btn'), m = $('dd-menu'); if (!b || !m) return;
+  b.setAttribute('aria-expanded', String(open)); m.hidden = !open;
+  if (open){ const a = m.querySelector('[aria-current="page"]') || m.querySelector('a'); if (a) a.focus(); }
+  else if (focusBtn) b.focus();
+}
+document.addEventListener('click', e => { if (ddOpen && !e.target.closest('.ddwrap')) setDD(false); });
+document.addEventListener('keydown', e => {
+  if (!ddOpen) return;
+  if (e.key === 'Escape'){ setDD(false, true); return; }
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp'){
+    const items = [...$('dd-menu').querySelectorAll('a')], i = items.indexOf(document.activeElement);
+    const n = e.key === 'ArrowDown' ? (i + 1) % items.length : (i - 1 + items.length) % items.length;
+    items[n].focus(); e.preventDefault();
+  }
+});
 function currentPage(){
   const h = location.hash.slice(1);
   const valid = PAGES.some(p => p.id === h);
@@ -1309,7 +1357,9 @@ function showPage(id, fromHash){
 }
 window.addEventListener('hashchange', () => { userPickedPage = true; showPage(currentPage(), true); });
 $('rail').addEventListener('click', e => {
+  if (e.target.closest('#dd-btn')){ setDD(!ddOpen); return; }
   const a = e.target.closest('a[href^="#"]'); if (!a) return;
+  ddOpen = false;
   userPickedPage = true;
   if (a.getAttribute('href') === location.hash){ e.preventDefault(); showPage(location.hash.slice(1), true); }
 });
