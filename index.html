@@ -214,7 +214,7 @@ footer{font-size:.8rem;color:var(--muted)}
     <div class="controls">
       <button id="testbtn" class="btn ghost" type="button" aria-pressed="false">Test mode</button>
       <button id="refresh" class="btn" type="button">Refresh ATIS</button>
-      <label class="chk"><input id="auto" type="checkbox"> Auto every 2 min</label>
+      <label class="chk"><input id="auto" type="checkbox" checked> Auto every 2 min</label>
     </div>
   </header>
   <p id="status" class="status" role="status">Live ATIS loads through the Claude desktop app. You can paste an ATIS into any strip below.</p>
@@ -2166,7 +2166,7 @@ $('fs-out').addEventListener('click', e => {
 $('refresh').addEventListener('click', refresh);
 let timer = null;
 const autoEl = $('auto');
-autoEl.checked = !!store.get('auto', false);
+autoEl.checked = !!store.get('auto', true);
 function setAuto(on){
   store.set('auto', on);
   if (timer){ clearInterval(timer); timer = null; }
@@ -2181,12 +2181,14 @@ renderAll();
     setStatus('Ready. Refresh reads live ATIS directly from VATSIM, with real-world D-ATIS where VATSIM has none.');
     fsStatus('Strips load directly from the VATSIM data feed.');
     setAuto(autoEl.checked);
+    refresh();
     return;
   }
   try { mcp = window.claude && window.claude.use ? await window.claude.use('mcp') : null; } catch(e){ mcp = null; }
   if (!mcp){ setStatus('Live ATIS works when this page is open in the Claude desktop app. Paste an ATIS into any strip to use the Playbook here.'); return; }
   setStatus('Ready. Refresh reads live ATIS through the desktop app\'s browser.');
   setAuto(autoEl.checked);
+  refresh();
 })();
 })();
 </script>
