@@ -1023,11 +1023,11 @@ function parseAtis(raw){
   const t = ' ' + String(raw || '').toUpperCase().replace(/\s+/g, ' ') + ' ';
   const res = {land:[], dep:[], appr:[], wind:null, vis:null, ceil:null, rvr:[], climbs:[]};
   // approaches: "ILS RWY 22", "RNAV Z RWY 31", "VIS APCH RWY 4", "RIVER VISUAL RWY 13", "PARKWAY VISUAL 13L"
-  const apRe = new RegExp('\\b(ILS|LOC(?:ALIZER)?|RNAV(?:\\s*\\(GPS\\))?|RNP|GPS|VOR|VIS(?:UAL)?|RIVER|EXPRESSWAY|EXPWY|PARKWAY|PARK|CANARSIE)(?:\\s+[XYZ]\\b)?(?:\\s+(?:VISUAL|VIS))?(?:\\s+(?:APCHS?|APPROACH(?:ES)?|APPS))?\\s*(?:TO\\s+)?(?:RWYS?|RYS?|RUNWAYS?)?\\s*' + RWY + '\\b' + LIST_TAIL, 'g');
+  const apRe = new RegExp('\\b(ILS|LOC(?:ALIZER)?|RNAV(?:\\s*\\(?GPS\\)?)?|RNP|GPS|VOR|VIS(?:UAL)?|RIVER|EXPRESSWAY|EXPWY|PARKWAY|PARK|CANARSIE)(?:\\s+[XYZ]\\b)?(?:\\s+(?:VISUAL|VIS))?(?:\\s+(?:APCHS?|APPROACH(?:ES)?|APPS))?\\s*(?:TO\\s+)?(?:RWYS?|RYS?|RUNWAYS?)?\\s*' + RWY + '\\b' + LIST_TAIL, 'g');
   let m;
   while ((m = apRe.exec(t))){
     const kind = m[1].replace(/\s.*/, '');
-    const variant = (m[0].match(/\b(RNAV(?:\s*\(GPS\))?)\s+([XYZ])\b/) || [])[2] || '';
+    const variant = (m[0].match(/\b(RNAV(?:\s*\(?GPS\)?)?)\s+([XYZ])\b/) || [])[2] || '';
     grabList(m[2], m[3]).forEach(r => res.appr.push({kind, variant, rwy:r}));
   }
   const landRe = new RegExp('\\b(?:LDG|LNDG|LANDING|LAND|LND|ARR(?:IVALS?|IVING)?)\\s+(?:RWYS?|RYS?|RUNWAYS?)\\s*' + RWY + '\\b' + LIST_TAIL, 'g');
@@ -1193,6 +1193,15 @@ function verdict(kind, text){ return '<span class="verdict v-' + kind + '">' + e
 
 // ATIS letter: green when the VATSIM ATIS lands and departs the same runways as the real-world ATIS, red when not,
 // neutral when there is no VATSIM ATIS (or nothing to compare against).
+// Landing runways with their advertised approach: "ILS 22", "RNAV Z 13L"; a runway with no named approach shows alone
+const APPR_NAME = {VIS:'VIS', VISUAL:'VIS', LOC:'LOC', LOCALIZER:'LOC', EXPRESSWAY:'EXPWY VIS', EXPWY:'EXPWY VIS', PARKWAY:'PARKWAY VIS', PARK:'PARKWAY VIS', RIVER:'RIVER VIS', CANARSIE:'CANARSIE VIS'};
+function ldgStr(p){
+  if (!p.land.length) return '—';
+  return p.land.map(r => {
+    const names = uniq(p.appr.filter(a => a.rwy === r).map(a => (APPR_NAME[a.kind] || a.kind) + (a.variant ? ' ' + a.variant : '')));
+    return (names.length ? names.join('/') + ' ' : '') + r;
+  }).join(', ');
+}
 function rwySetEq(a, b){ const x = [...new Set(a)].sort(), y = [...new Set(b)].sort(); return x.length === y.length && x.every((v, i) => v === y[i]); }
 function codeBox(ap, a, p){
   const letter = esc(a && a.code ? a.code : '–');
@@ -1223,7 +1232,7 @@ function renderCard(ap){
   }
   if (p){
     html += '<div class="atis-meta">' +
-      '<span class="chip">LDG <b>' + esc(p.land.join(', ') || '—') + '</b></span>' +
+      '<span class="chip">LDG <b>' + esc(ldgStr(p)) + '</b></span>' +
       '<span class="chip">DEP <b>' + esc(p.dep.join(', ') || '—') + '</b></span>' +
       '<span class="chip">' + esc(windStr(p.wind)) + '</span>' +
       '<span class="chip">' + esc(wxStr(p)) + '</span>' +
