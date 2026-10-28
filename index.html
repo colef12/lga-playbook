@@ -223,6 +223,8 @@ td.num,.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
 .page ul{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:4px;max-width:80ch}
 .page blockquote{margin:0;padding:8px 12px;border-left:3px solid var(--accent);background:var(--bg);font-family:var(--f-mono);font-size:.85rem}
 .note{font-size:.85rem;color:var(--muted)}
+.vfr-type{display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line);padding-top:12px}
+.vfr-sum td{vertical-align:top}
 footer{font-size:.8rem;color:var(--muted)}
 @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
 </style>
@@ -744,6 +746,475 @@ footer{font-size:.8rem;color:var(--muted)}
     </tbody></table></div>
   </section>
 
+  <section class="page vfr" id="v4" data-page hidden>
+    <h2>VFR Departures — Depart runway 4</h2>
+    <p class="lead">LGA is departing runway 4.</p>
+    
+    <ul>
+      <li>LGA sits inside the New York Class B: every VFR departure gets a <b>discrete squawk</b> and a <b>clearance out of the Class B</b>.</li>
+      <li>Jets must take flight following (an SVD).</li>
+    </ul>
+
+    <h3>The four VFR departure types</h3>
+    <div class="tw"><table class="vfr-sum"><thead><tr><th>Type</th><th>Aircraft</th><th>Departure instructions</th><th>Altitude</th><th>Frequency</th></tr></thead><tbody>
+      <tr><td><b>1. VFR with flight following (SVD)</b></td><td>All (mandatory for jets)</td><td>Fly runway heading, at 600 ft turn right heading 055</td><td class="num">2,500</td><td>Same as IFR departures</td></tr>
+      <tr><td><b>2. VFR without flight following</b></td><td>Fixed-wing</td><td>Fly runway heading</td><td class="num">VFR at 1,400</td><td>126.05 LaGuardia Tower (CBA)</td></tr>
+      <tr><td><b>3. Skyline</b></td><td>All, north or south</td><td>Skyline Route northbound / southbound</td><td>Given by Local</td><td>126.05 LaGuardia Tower (CBA)</td></tr>
+      <tr><td><b>4. Helicopter</b></td><td>Helicopters, west or east</td><td>West: via the Triborough Bridge<br>East: via the Throgs Neck Bridge</td><td class="num">1,000</td><td>126.05 LaGuardia Tower (CBA)</td></tr>
+    </tbody></table></div>
+    <p class="note">126.05 is LaGuardia CBA Tower (1Q). When 1Q is offline, use 118.7 (Local, 1I) or whoever covers LaGuardia Tower top-down.</p>
+
+    <div class="vfr-type">
+      <h3>1. VFR with flight following (SVD)</h3>
+      <div class="tw"><table><thead><tr><th>Aircraft</th><th>Direction</th><th>Departure instructions</th><th>Altitude</th></tr></thead><tbody><tr><td>All</td><td>All</td><td>Fly runway heading, at 600 ft turn right heading 055</td><td class="num">2,500</td></tr></tbody></table></div>
+      <ul>
+        <li><b>Frequency:</b> the same one IFR departures get. The first staffed of LGA Departure 120.4, HAARP 120.8, New York Center 125.325.</li>
+        <li><b>Delivery:</b></li>
+      </ul>
+      <blockquote>CLEARED OUT OF BRAVO AIRSPACE VIA FLY RUNWAY HEADING, AT 600 FT TURN RIGHT HEADING 055, MAINTAIN 2,500, DEPARTURE FREQUENCY (120.4), SQUAWK (code)</blockquote>
+      <ul>
+        <li><b>Local:</b> the aircraft leaves Tower's airspace vertically, so hand it to the N90 controller working LGA IFR departures as soon as it starts turning on course, traffic permitting. N90 radar identifies it.</li>
+      </ul>
+    </div>
+
+    <div class="vfr-type">
+      <h3>2. VFR without flight following</h3>
+      <ul>
+        <li><b>Who:</b> fixed-wing only. Jets can't use this; they need an SVD.</li>
+        <li><b>Delivery:</b> fly runway heading, maintain VFR at 1,400, frequency 126.05.</li>
+      </ul>
+      <blockquote>CLEARED OUT OF BRAVO AIRSPACE VIA FLY RUNWAY HEADING, MAINTAIN VFR AT 1,400, DEPARTURE FREQUENCY 126.05, SQUAWK (code)</blockquote>
+      <ul>
+        <li><b>Local:</b> the aircraft leaves laterally, so hand it to LaGuardia CBA (1Q) once it starts turning on course; 1Q radar identifies it. If 1Q isn't staffed, keep it on Local.</li>
+      </ul>
+      <blockquote>CONTACT LAGUARDIA TOWER, 126.05</blockquote>
+    </div>
+
+    <div class="vfr-type">
+      <h3>3. Skyline Route</h3>
+      <ul>
+        <li><b>The route:</b> a VFR transition over the Hudson between the Verrazano Bridge and the Alpine Tower. It needs a Class B clearance. Southbound aircraft fly the west bank; northbound fly the east bank. Altitude 1,300–2,000.</li>
+        <li><b>Delivery:</b> clear it for the route and direction; give <b>no altitude</b>. Local assigns it.</li>
+      </ul>
+      <blockquote>CLEARED OUT OF BRAVO AIRSPACE VIA THE SKYLINE ROUTE (NORTH/SOUTH)BOUND, DEPARTURE FREQUENCY 126.05, SQUAWK (code)</blockquote>
+      <ul>
+        <li><b>Local:</b> give a heading toward the river, inside Tower's airspace, and an altitude between 1,300 and 2,000.</li>
+      </ul>
+      <blockquote>FLY HEADING (heading), MAINTAIN (1,300–2,000)</blockquote>
+      <ul>
+        <li><b>Or</b>, traffic permitting, send it straight onto the route to get it out faster:</li>
+      </ul>
+      <blockquote>PROCEED DIRECT (landmark), JOIN THE SKYLINE ROUTE (direction)-BOUND, MAINTAIN (altitude)<br>e.g. "Proceed direct G-W-B, join the Skyline Route southbound, maintain 2,000."</blockquote>
+      <ul>
+        <li><b>Handoff:</b> leaves laterally, so to LaGuardia CBA (1Q) on 126.05, or stays with Local if 1Q isn't staffed.</li>
+        <li><b>Hudson SFRA:</b> the Class B floor over the Hudson and East Rivers is 1,300. Below that, transient aircraft run 1,000–1,300 and local operators below 1,000, keeping to the right shoreline.</li>
+      </ul>
+    </div>
+
+    <div class="vfr-type">
+      <h3>4. Helicopter departures</h3>
+      <div class="tw"><table><thead><tr><th>Direction</th><th>Departure instructions</th><th>Altitude</th></tr></thead><tbody>
+        <tr><td>West</td><td>Via the Triborough Bridge</td><td class="num">1,000</td></tr>
+        <tr><td>East</td><td>Via the Throgs Neck Bridge</td><td class="num">1,000</td></tr>
+      </tbody></table></div>
+      <blockquote>CLEARED OUT OF BRAVO AIRSPACE VIA THE (TRIBOROUGH / THROGS NECK) BRIDGE, MAINTAIN VFR AT 1,000, DEPARTURE FREQUENCY 126.05, SQUAWK (code)</blockquote>
+      <ul>
+        <li><b>Local:</b> leaves laterally, so hand to LaGuardia CBA (1Q) on 126.05, or keep it on Local if 1Q isn't staffed.</li>
+      </ul>
+    </div>
+    <p class="note">Source: vZNY LGA SOP › Clearance Delivery › VFR Departures, and Local Control › Departures, Skyline Route and New York SFRA.</p>
+  </section>
+  <section class="page vfr" id="v31" data-page hidden>
+    <h2>VFR Departures — Depart runway 31</h2>
+    <p class="lead">LGA is departing runway 31.</p>
+    
+    <ul>
+      <li>LGA sits inside the New York Class B: every VFR departure gets a <b>discrete squawk</b> and a <b>clearance out of the Class B</b>.</li>
+      <li>Jets must take flight following (an SVD).</li>
+    </ul>
+
+    <h3>The four VFR departure types</h3>
+    <div class="tw"><table class="vfr-sum"><thead><tr><th>Type</th><th>Aircraft</th><th>Departure instructions</th><th>Altitude</th><th>Frequency</th></tr></thead><tbody>
+      <tr><td><b>1. VFR with flight following (SVD)</b></td><td>All (mandatory for jets)</td><td>North &amp; East gates: Fly heading 359<br>South &amp; West gates: Fly heading 340</td><td class="num">2,500</td><td>Same as IFR departures</td></tr>
+      <tr><td><b>2. VFR without flight following</b></td><td>Fixed-wing</td><td>Fly runway heading</td><td class="num">VFR at 1,400</td><td>126.05 LaGuardia Tower (CBA)</td></tr>
+      <tr><td><b>3. Skyline</b></td><td>All, north or south</td><td>Skyline Route northbound / southbound</td><td>Given by Local</td><td>126.05 LaGuardia Tower (CBA)</td></tr>
+      <tr><td><b>4. Helicopter</b></td><td>Helicopters, west or east</td><td>West: via the Triborough Bridge<br>East: via the Throgs Neck Bridge</td><td class="num">1,000</td><td>126.05 LaGuardia Tower (CBA)</td></tr>
+    </tbody></table></div>
+    <p class="note">126.05 is LaGuardia CBA Tower (1Q). When 1Q is offline, use 118.7 (Local, 1I) or whoever covers LaGuardia Tower top-down.</p>
+
+    <div class="vfr-type">
+      <h3>1. VFR with flight following (SVD)</h3>
+      <div class="tw"><table><thead><tr><th>Aircraft</th><th>Direction</th><th>Departure instructions</th><th>Altitude</th></tr></thead><tbody><tr><td>All</td><td>North &amp; East gates</td><td>Fly heading 359</td><td class="num">2,500</td></tr><tr><td>All</td><td>South &amp; West gates</td><td>Fly heading 340</td><td class="num">2,500</td></tr></tbody></table></div>
+      <ul>
+        <li><b>Frequency:</b> the same one IFR departures get. The first staffed of LGA Departure 120.4, HAARP 120.8, New York Center 125.325.</li>
+        <li><b>Delivery:</b></li>
+      </ul>
+      <blockquote>CLEARED OUT OF BRAVO AIRSPACE VIA FLY HEADING 359, MAINTAIN 2,500, DEPARTURE FREQUENCY (120.4), SQUAWK (code)</blockquote>
+      <ul>
+        <li><b>Local:</b> the aircraft leaves Tower's airspace vertically, so hand it to the N90 controller working LGA IFR departures as soon as it starts turning on course, traffic permitting. N90 radar identifies it.</li>
+      </ul>
+    </div>
+
+    <div class="vfr-type">
+      <h3>2. VFR without flight following</h3>
+      <ul>
+        <li><b>Who:</b> fixed-wing only. Jets can't use this; they need an SVD.</li>
+        <li><b>Delivery:</b> fly runway heading, maintain VFR at 1,400, frequency 126.05.</li>
+      </ul>
+      <blockquote>CLEARED OUT OF BRAVO AIRSPACE VIA FLY RUNWAY HEADING, MAINTAIN VFR AT 1,400, DEPARTURE FREQUENCY 126.05, SQUAWK (code)</blockquote>
+      <ul>
+        <li><b>Local:</b> the aircraft leaves laterally, so hand it to LaGuardia CBA (1Q) once it starts turning on course; 1Q radar identifies it. If 1Q isn't staffed, keep it on Local.</li>
+      </ul>
+      <blockquote>CONTACT LAGUARDIA TOWER, 126.05</blockquote>
+    </div>
+
+    <div class="vfr-type">
+      <h3>3. Skyline Route</h3>
+      <ul>
+        <li><b>The route:</b> a VFR transition over the Hudson between the Verrazano Bridge and the Alpine Tower. It needs a Class B clearance. Southbound aircraft fly the west bank; northbound fly the east bank. Altitude 1,300–2,000.</li>
+        <li><b>Delivery:</b> clear it for the route and direction; give <b>no altitude</b>. Local assigns it.</li>
+      </ul>
+      <blockquote>CLEARED OUT OF BRAVO AIRSPACE VIA THE SKYLINE ROUTE (NORTH/SOUTH)BOUND, DEPARTURE FREQUENCY 126.05, SQUAWK (code)</blockquote>
+      <ul>
+        <li><b>Local:</b> give a heading toward the river, inside Tower's airspace, and an altitude between 1,300 and 2,000.</li>
+      </ul>
+      <blockquote>FLY HEADING (heading), MAINTAIN (1,300–2,000)</blockquote>
+      <ul>
+        <li><b>Or</b>, traffic permitting, send it straight onto the route to get it out faster:</li>
+      </ul>
+      <blockquote>PROCEED DIRECT (landmark), JOIN THE SKYLINE ROUTE (direction)-BOUND, MAINTAIN (altitude)<br>e.g. "Proceed direct G-W-B, join the Skyline Route southbound, maintain 2,000."</blockquote>
+      <ul>
+        <li><b>Handoff:</b> leaves laterally, so to LaGuardia CBA (1Q) on 126.05, or stays with Local if 1Q isn't staffed.</li>
+        <li><b>Hudson SFRA:</b> the Class B floor over the Hudson and East Rivers is 1,300. Below that, transient aircraft run 1,000–1,300 and local operators below 1,000, keeping to the right shoreline.</li>
+      </ul>
+    </div>
+
+    <div class="vfr-type">
+      <h3>4. Helicopter departures</h3>
+      <div class="tw"><table><thead><tr><th>Direction</th><th>Departure instructions</th><th>Altitude</th></tr></thead><tbody>
+        <tr><td>West</td><td>Via the Triborough Bridge</td><td class="num">1,000</td></tr>
+        <tr><td>East</td><td>Via the Throgs Neck Bridge</td><td class="num">1,000</td></tr>
+      </tbody></table></div>
+      <blockquote>CLEARED OUT OF BRAVO AIRSPACE VIA THE (TRIBOROUGH / THROGS NECK) BRIDGE, MAINTAIN VFR AT 1,000, DEPARTURE FREQUENCY 126.05, SQUAWK (code)</blockquote>
+      <ul>
+        <li><b>Local:</b> leaves laterally, so hand to LaGuardia CBA (1Q) on 126.05, or keep it on Local if 1Q isn't staffed.</li>
+      </ul>
+    </div>
+    <p class="note">Source: vZNY LGA SOP › Clearance Delivery › VFR Departures, and Local Control › Departures, Skyline Route and New York SFRA.</p>
+  </section>
+  <section class="page vfr" id="v22" data-page hidden>
+    <h2>VFR Departures — Depart runway 22</h2>
+    <p class="lead">LGA is departing runway 22.</p>
+    
+    <ul>
+      <li>LGA sits inside the New York Class B: every VFR departure gets a <b>discrete squawk</b> and a <b>clearance out of the Class B</b>.</li>
+      <li>Jets must take flight following (an SVD).</li>
+    </ul>
+
+    <h3>The four VFR departure types</h3>
+    <div class="tw"><table class="vfr-sum"><thead><tr><th>Type</th><th>Aircraft</th><th>Departure instructions</th><th>Altitude</th><th>Frequency</th></tr></thead><tbody>
+      <tr><td><b>1. VFR with flight following (SVD)</b></td><td>All (mandatory for jets)</td><td>Fly runway heading until LGA 2.5 DME, then turn left heading 070</td><td class="num">2,500</td><td>Same as IFR departures</td></tr>
+      <tr><td><b>2. VFR without flight following</b></td><td>Fixed-wing</td><td>Fly runway heading</td><td class="num">VFR at 1,400</td><td>126.05 LaGuardia Tower (CBA)</td></tr>
+      <tr><td><b>3. Skyline</b></td><td>All, north or south</td><td>Skyline Route northbound / southbound</td><td>Given by Local</td><td>126.05 LaGuardia Tower (CBA)</td></tr>
+      <tr><td><b>4. Helicopter</b></td><td>Helicopters, west or east</td><td>West: via the Triborough Bridge<br>East: via the Throgs Neck Bridge</td><td class="num">1,000</td><td>126.05 LaGuardia Tower (CBA)</td></tr>
+    </tbody></table></div>
+    <p class="note">126.05 is LaGuardia CBA Tower (1Q). When 1Q is offline, use 118.7 (Local, 1I) or whoever covers LaGuardia Tower top-down.</p>
+
+    <div class="vfr-type">
+      <h3>1. VFR with flight following (SVD)</h3>
+      <div class="tw"><table><thead><tr><th>Aircraft</th><th>Direction</th><th>Departure instructions</th><th>Altitude</th></tr></thead><tbody><tr><td>All</td><td>All</td><td>Fly runway heading until LGA 2.5 DME, then turn left heading 070</td><td class="num">2,500</td></tr></tbody></table></div>
+      <ul>
+        <li><b>Frequency:</b> the same one IFR departures get. The first staffed of LGA Departure 120.4, HAARP 120.8, New York Center 125.325.</li>
+        <li><b>Delivery:</b></li>
+      </ul>
+      <blockquote>CLEARED OUT OF BRAVO AIRSPACE VIA FLY RUNWAY HEADING UNTIL LGA 2.5 DME, THEN TURN LEFT HEADING 070, MAINTAIN 2,500, DEPARTURE FREQUENCY (120.4), SQUAWK (code)</blockquote>
+      <ul>
+        <li><b>Local:</b> the aircraft leaves Tower's airspace vertically, so hand it to the N90 controller working LGA IFR departures as soon as it starts turning on course, traffic permitting. N90 radar identifies it.</li>
+      </ul>
+    </div>
+
+    <div class="vfr-type">
+      <h3>2. VFR without flight following</h3>
+      <ul>
+        <li><b>Who:</b> fixed-wing only. Jets can't use this; they need an SVD.</li>
+        <li><b>Delivery:</b> fly runway heading, maintain VFR at 1,400, frequency 126.05.</li>
+      </ul>
+      <blockquote>CLEARED OUT OF BRAVO AIRSPACE VIA FLY RUNWAY HEADING, MAINTAIN VFR AT 1,400, DEPARTURE FREQUENCY 126.05, SQUAWK (code)</blockquote>
+      <ul>
+        <li><b>Local:</b> the aircraft leaves laterally, so hand it to LaGuardia CBA (1Q) once it starts turning on course; 1Q radar identifies it. If 1Q isn't staffed, keep it on Local.</li>
+      </ul>
+      <blockquote>CONTACT LAGUARDIA TOWER, 126.05</blockquote>
+    </div>
+
+    <div class="vfr-type">
+      <h3>3. Skyline Route</h3>
+      <ul>
+        <li><b>The route:</b> a VFR transition over the Hudson between the Verrazano Bridge and the Alpine Tower. It needs a Class B clearance. Southbound aircraft fly the west bank; northbound fly the east bank. Altitude 1,300–2,000.</li>
+        <li><b>Delivery:</b> clear it for the route and direction; give <b>no altitude</b>. Local assigns it.</li>
+      </ul>
+      <blockquote>CLEARED OUT OF BRAVO AIRSPACE VIA THE SKYLINE ROUTE (NORTH/SOUTH)BOUND, DEPARTURE FREQUENCY 126.05, SQUAWK (code)</blockquote>
+      <ul>
+        <li><b>Local:</b> give a heading toward the river, inside Tower's airspace, and an altitude between 1,300 and 2,000.</li>
+      </ul>
+      <blockquote>FLY HEADING (heading), MAINTAIN (1,300–2,000)</blockquote>
+      <ul>
+        <li><b>Or</b>, traffic permitting, send it straight onto the route to get it out faster:</li>
+      </ul>
+      <blockquote>PROCEED DIRECT (landmark), JOIN THE SKYLINE ROUTE (direction)-BOUND, MAINTAIN (altitude)<br>e.g. "Proceed direct G-W-B, join the Skyline Route southbound, maintain 2,000."</blockquote>
+      <ul>
+        <li><b>Handoff:</b> leaves laterally, so to LaGuardia CBA (1Q) on 126.05, or stays with Local if 1Q isn't staffed.</li>
+        <li><b>Hudson SFRA:</b> the Class B floor over the Hudson and East Rivers is 1,300. Below that, transient aircraft run 1,000–1,300 and local operators below 1,000, keeping to the right shoreline.</li>
+      </ul>
+    </div>
+
+    <div class="vfr-type">
+      <h3>4. Helicopter departures</h3>
+      <div class="tw"><table><thead><tr><th>Direction</th><th>Departure instructions</th><th>Altitude</th></tr></thead><tbody>
+        <tr><td>West</td><td>Via the Triborough Bridge</td><td class="num">1,000</td></tr>
+        <tr><td>East</td><td>Via the Throgs Neck Bridge</td><td class="num">1,000</td></tr>
+      </tbody></table></div>
+      <blockquote>CLEARED OUT OF BRAVO AIRSPACE VIA THE (TRIBOROUGH / THROGS NECK) BRIDGE, MAINTAIN VFR AT 1,000, DEPARTURE FREQUENCY 126.05, SQUAWK (code)</blockquote>
+      <ul>
+        <li><b>Local:</b> leaves laterally, so hand to LaGuardia CBA (1Q) on 126.05, or keep it on Local if 1Q isn't staffed.</li>
+      </ul>
+    </div>
+    <p class="note">Source: vZNY LGA SOP › Clearance Delivery › VFR Departures, and Local Control › Departures, Skyline Route and New York SFRA.</p>
+  </section>
+  <section class="page vfr" id="v13w" data-page hidden>
+    <h2>VFR Departures — Depart 13 (Whitestone)</h2>
+    <p class="lead">LGA is departing runway 13 with IFR departures on the WHITESTONE climb: LGA owns Belmont (alone, or together with Coney).</p>
+    <p class="note">The page picks the runway 13 VFR page from the airspace ownership on the active strip, the same logic the IFR SID picks use. If coordination says otherwise, choose another 13 page from the VFR dropdown.</p>
+    <ul>
+      <li>LGA sits inside the New York Class B: every VFR departure gets a <b>discrete squawk</b> and a <b>clearance out of the Class B</b>.</li>
+      <li>Jets must take flight following (an SVD).</li>
+    </ul>
+
+    <h3>The four VFR departure types</h3>
+    <div class="tw"><table class="vfr-sum"><thead><tr><th>Type</th><th>Aircraft</th><th>Departure instructions</th><th>Altitude</th><th>Frequency</th></tr></thead><tbody>
+      <tr><td><b>1. VFR with flight following (SVD)</b></td><td>All (mandatory for jets)</td><td>Turn right heading 180 until LGA 2.5 DME, then turn left heading 040</td><td class="num">2,500</td><td>Same as IFR departures</td></tr>
+      <tr><td><b>2. VFR without flight following</b></td><td>Fixed-wing</td><td>Fly runway heading</td><td class="num">VFR at 1,400</td><td>126.05 LaGuardia Tower (CBA)</td></tr>
+      <tr><td><b>3. Skyline</b></td><td>All, north or south</td><td>Skyline Route northbound / southbound</td><td>Given by Local</td><td>126.05 LaGuardia Tower (CBA)</td></tr>
+      <tr><td><b>4. Helicopter</b></td><td>Helicopters, west or east</td><td>West: via the Triborough Bridge<br>East: via the Throgs Neck Bridge</td><td class="num">1,000</td><td>126.05 LaGuardia Tower (CBA)</td></tr>
+    </tbody></table></div>
+    <p class="note">126.05 is LaGuardia CBA Tower (1Q). When 1Q is offline, use 118.7 (Local, 1I) or whoever covers LaGuardia Tower top-down.</p>
+
+    <div class="vfr-type">
+      <h3>1. VFR with flight following (SVD)</h3>
+      <div class="tw"><table><thead><tr><th>Aircraft</th><th>Direction</th><th>Departure instructions</th><th>Altitude</th></tr></thead><tbody><tr><td>All</td><td>All</td><td>Turn right heading 180 until LGA 2.5 DME, then turn left heading 040</td><td class="num">2,500</td></tr></tbody></table></div>
+      <ul>
+        <li><b>Frequency:</b> the same one IFR departures get. The first staffed of LGA Departure 120.4, HAARP 120.8, New York Center 125.325.</li>
+        <li><b>Delivery:</b></li>
+      </ul>
+      <blockquote>CLEARED OUT OF BRAVO AIRSPACE VIA TURN RIGHT HEADING 180 UNTIL LGA 2.5 DME, THEN TURN LEFT HEADING 040, MAINTAIN 2,500, DEPARTURE FREQUENCY (120.4), SQUAWK (code)</blockquote>
+      <ul>
+        <li><b>Local:</b> the aircraft leaves Tower's airspace vertically, so hand it to the N90 controller working LGA IFR departures as soon as it starts turning on course, traffic permitting. N90 radar identifies it.</li>
+      </ul>
+    </div>
+
+    <div class="vfr-type">
+      <h3>2. VFR without flight following</h3>
+      <ul>
+        <li><b>Who:</b> fixed-wing only. Jets can't use this; they need an SVD.</li>
+        <li><b>Delivery:</b> fly runway heading, maintain VFR at 1,400, frequency 126.05.</li>
+      </ul>
+      <blockquote>CLEARED OUT OF BRAVO AIRSPACE VIA FLY RUNWAY HEADING, MAINTAIN VFR AT 1,400, DEPARTURE FREQUENCY 126.05, SQUAWK (code)</blockquote>
+      <ul>
+        <li><b>Local:</b> the aircraft leaves laterally, so hand it to LaGuardia CBA (1Q) once it starts turning on course; 1Q radar identifies it. If 1Q isn't staffed, keep it on Local.</li>
+      </ul>
+      <blockquote>CONTACT LAGUARDIA TOWER, 126.05</blockquote>
+    </div>
+
+    <div class="vfr-type">
+      <h3>3. Skyline Route</h3>
+      <ul>
+        <li><b>The route:</b> a VFR transition over the Hudson between the Verrazano Bridge and the Alpine Tower. It needs a Class B clearance. Southbound aircraft fly the west bank; northbound fly the east bank. Altitude 1,300–2,000.</li>
+        <li><b>Delivery:</b> clear it for the route and direction; give <b>no altitude</b>. Local assigns it.</li>
+      </ul>
+      <blockquote>CLEARED OUT OF BRAVO AIRSPACE VIA THE SKYLINE ROUTE (NORTH/SOUTH)BOUND, DEPARTURE FREQUENCY 126.05, SQUAWK (code)</blockquote>
+      <ul>
+        <li><b>Local:</b> give a heading toward the river, inside Tower's airspace, and an altitude between 1,300 and 2,000.</li>
+      </ul>
+      <blockquote>FLY HEADING (heading), MAINTAIN (1,300–2,000)</blockquote>
+      <ul>
+        <li><b>Or</b>, traffic permitting, send it straight onto the route to get it out faster:</li>
+      </ul>
+      <blockquote>PROCEED DIRECT (landmark), JOIN THE SKYLINE ROUTE (direction)-BOUND, MAINTAIN (altitude)<br>e.g. "Proceed direct G-W-B, join the Skyline Route southbound, maintain 2,000."</blockquote>
+      <ul>
+        <li><b>Handoff:</b> leaves laterally, so to LaGuardia CBA (1Q) on 126.05, or stays with Local if 1Q isn't staffed.</li>
+        <li><b>Hudson SFRA:</b> the Class B floor over the Hudson and East Rivers is 1,300. Below that, transient aircraft run 1,000–1,300 and local operators below 1,000, keeping to the right shoreline.</li>
+      </ul>
+    </div>
+
+    <div class="vfr-type">
+      <h3>4. Helicopter departures</h3>
+      <div class="tw"><table><thead><tr><th>Direction</th><th>Departure instructions</th><th>Altitude</th></tr></thead><tbody>
+        <tr><td>West</td><td>Via the Triborough Bridge</td><td class="num">1,000</td></tr>
+        <tr><td>East</td><td>Via the Throgs Neck Bridge</td><td class="num">1,000</td></tr>
+      </tbody></table></div>
+      <blockquote>CLEARED OUT OF BRAVO AIRSPACE VIA THE (TRIBOROUGH / THROGS NECK) BRIDGE, MAINTAIN VFR AT 1,000, DEPARTURE FREQUENCY 126.05, SQUAWK (code)</blockquote>
+      <ul>
+        <li><b>Local:</b> leaves laterally, so hand to LaGuardia CBA (1Q) on 126.05, or keep it on Local if 1Q isn't staffed.</li>
+      </ul>
+    </div>
+    <p class="note">Source: vZNY LGA SOP › Clearance Delivery › VFR Departures, and Local Control › Departures, Skyline Route and New York SFRA.</p>
+  </section>
+  <section class="page vfr" id="v13c" data-page hidden>
+    <h2>VFR Departures — Depart 13 (All climbs)</h2>
+    <p class="lead">LGA is departing runway 13 with the mixed climbs: LGA owns Coney and JFK owns Belmont (TNNIS#/FLUSHING east, NTHNS#/CONEY south, GLDMN#/MASPETH north and west).</p>
+    <p class="note">The page picks the runway 13 VFR page from the airspace ownership on the active strip, the same logic the IFR SID picks use. If coordination says otherwise, choose another 13 page from the VFR dropdown.</p>
+    <ul>
+      <li>LGA sits inside the New York Class B: every VFR departure gets a <b>discrete squawk</b> and a <b>clearance out of the Class B</b>.</li>
+      <li>Jets must take flight following (an SVD).</li>
+    </ul>
+
+    <h3>The four VFR departure types</h3>
+    <div class="tw"><table class="vfr-sum"><thead><tr><th>Type</th><th>Aircraft</th><th>Departure instructions</th><th>Altitude</th><th>Frequency</th></tr></thead><tbody>
+      <tr><td><b>1. VFR with flight following (SVD)</b></td><td>All (mandatory for jets)</td><td>Props: Fly runway heading until LGA 2.5 DME, then turn left heading 050<br>Jets: Turn right heading 180 until 3,000, then turn right heading 340</td><td class="num">2,500 / 4,500</td><td>Same as IFR departures</td></tr>
+      <tr><td><b>2. VFR without flight following</b></td><td>Fixed-wing</td><td>Fly runway heading</td><td class="num">VFR at 1,400</td><td>126.05 LaGuardia Tower (CBA)</td></tr>
+      <tr><td><b>3. Skyline</b></td><td>All, north or south</td><td>Skyline Route northbound / southbound</td><td>Given by Local</td><td>126.05 LaGuardia Tower (CBA)</td></tr>
+      <tr><td><b>4. Helicopter</b></td><td>Helicopters, west or east</td><td>West: via the Triborough Bridge<br>East: via the Throgs Neck Bridge</td><td class="num">1,000</td><td>126.05 LaGuardia Tower (CBA)</td></tr>
+    </tbody></table></div>
+    <p class="note">126.05 is LaGuardia CBA Tower (1Q). When 1Q is offline, use 118.7 (Local, 1I) or whoever covers LaGuardia Tower top-down.</p>
+
+    <div class="vfr-type">
+      <h3>1. VFR with flight following (SVD)</h3>
+      <div class="tw"><table><thead><tr><th>Aircraft</th><th>Direction</th><th>Departure instructions</th><th>Altitude</th></tr></thead><tbody><tr><td>Props</td><td>All</td><td>Fly runway heading until LGA 2.5 DME, then turn left heading 050</td><td class="num">2,500</td></tr><tr><td>Jets</td><td>All</td><td>Turn right heading 180 until 3,000, then turn right heading 340</td><td class="num">4,500</td></tr></tbody></table></div>
+      <ul>
+        <li><b>Frequency:</b> the same one IFR departures get. The first staffed of LGA Departure 120.4, HAARP 120.8, New York Center 125.325.</li>
+        <li><b>Delivery:</b></li>
+      </ul>
+      <blockquote>CLEARED OUT OF BRAVO AIRSPACE VIA FLY RUNWAY HEADING UNTIL LGA 2.5 DME, THEN TURN LEFT HEADING 050, MAINTAIN 2,500, DEPARTURE FREQUENCY (120.4), SQUAWK (code)</blockquote>
+      <ul>
+        <li><b>Local:</b> the aircraft leaves Tower's airspace vertically, so hand it to the N90 controller working LGA IFR departures as soon as it starts turning on course, traffic permitting. N90 radar identifies it.</li>
+      </ul>
+    </div>
+
+    <div class="vfr-type">
+      <h3>2. VFR without flight following</h3>
+      <ul>
+        <li><b>Who:</b> fixed-wing only. Jets can't use this; they need an SVD.</li>
+        <li><b>Delivery:</b> fly runway heading, maintain VFR at 1,400, frequency 126.05.</li>
+      </ul>
+      <blockquote>CLEARED OUT OF BRAVO AIRSPACE VIA FLY RUNWAY HEADING, MAINTAIN VFR AT 1,400, DEPARTURE FREQUENCY 126.05, SQUAWK (code)</blockquote>
+      <ul>
+        <li><b>Local:</b> the aircraft leaves laterally, so hand it to LaGuardia CBA (1Q) once it starts turning on course; 1Q radar identifies it. If 1Q isn't staffed, keep it on Local.</li>
+      </ul>
+      <blockquote>CONTACT LAGUARDIA TOWER, 126.05</blockquote>
+    </div>
+
+    <div class="vfr-type">
+      <h3>3. Skyline Route</h3>
+      <ul>
+        <li><b>The route:</b> a VFR transition over the Hudson between the Verrazano Bridge and the Alpine Tower. It needs a Class B clearance. Southbound aircraft fly the west bank; northbound fly the east bank. Altitude 1,300–2,000.</li>
+        <li><b>Delivery:</b> clear it for the route and direction; give <b>no altitude</b>. Local assigns it.</li>
+      </ul>
+      <blockquote>CLEARED OUT OF BRAVO AIRSPACE VIA THE SKYLINE ROUTE (NORTH/SOUTH)BOUND, DEPARTURE FREQUENCY 126.05, SQUAWK (code)</blockquote>
+      <ul>
+        <li><b>Local:</b> give a heading toward the river, inside Tower's airspace, and an altitude between 1,300 and 2,000.</li>
+      </ul>
+      <blockquote>FLY HEADING (heading), MAINTAIN (1,300–2,000)</blockquote>
+      <ul>
+        <li><b>Or</b>, traffic permitting, send it straight onto the route to get it out faster:</li>
+      </ul>
+      <blockquote>PROCEED DIRECT (landmark), JOIN THE SKYLINE ROUTE (direction)-BOUND, MAINTAIN (altitude)<br>e.g. "Proceed direct G-W-B, join the Skyline Route southbound, maintain 2,000."</blockquote>
+      <ul>
+        <li><b>Handoff:</b> leaves laterally, so to LaGuardia CBA (1Q) on 126.05, or stays with Local if 1Q isn't staffed.</li>
+        <li><b>Hudson SFRA:</b> the Class B floor over the Hudson and East Rivers is 1,300. Below that, transient aircraft run 1,000–1,300 and local operators below 1,000, keeping to the right shoreline.</li>
+      </ul>
+    </div>
+
+    <div class="vfr-type">
+      <h3>4. Helicopter departures</h3>
+      <div class="tw"><table><thead><tr><th>Direction</th><th>Departure instructions</th><th>Altitude</th></tr></thead><tbody>
+        <tr><td>West</td><td>Via the Triborough Bridge</td><td class="num">1,000</td></tr>
+        <tr><td>East</td><td>Via the Throgs Neck Bridge</td><td class="num">1,000</td></tr>
+      </tbody></table></div>
+      <blockquote>CLEARED OUT OF BRAVO AIRSPACE VIA THE (TRIBOROUGH / THROGS NECK) BRIDGE, MAINTAIN VFR AT 1,000, DEPARTURE FREQUENCY 126.05, SQUAWK (code)</blockquote>
+      <ul>
+        <li><b>Local:</b> leaves laterally, so hand to LaGuardia CBA (1Q) on 126.05, or keep it on Local if 1Q isn't staffed.</li>
+      </ul>
+    </div>
+    <p class="note">Source: vZNY LGA SOP › Clearance Delivery › VFR Departures, and Local Control › Departures, Skyline Route and New York SFRA.</p>
+  </section>
+  <section class="page vfr" id="v13f" data-page hidden>
+    <h2>VFR Departures — Depart 13 (Flushing / TNNIS)</h2>
+    <p class="lead">LGA is departing runway 13 with IFR departures on TNNIS#/FLUSHING: JFK is landing ILS 13L, or JFK owns both Belmont and Coney.</p>
+    <p class="note">The page picks the runway 13 VFR page from the airspace ownership on the active strip, the same logic the IFR SID picks use. If coordination says otherwise, choose another 13 page from the VFR dropdown.</p>
+    <ul>
+      <li>LGA sits inside the New York Class B: every VFR departure gets a <b>discrete squawk</b> and a <b>clearance out of the Class B</b>.</li>
+      <li>Jets must take flight following (an SVD).</li>
+    </ul>
+
+    <h3>The four VFR departure types</h3>
+    <div class="tw"><table class="vfr-sum"><thead><tr><th>Type</th><th>Aircraft</th><th>Departure instructions</th><th>Altitude</th><th>Frequency</th></tr></thead><tbody>
+      <tr><td><b>1. VFR with flight following (SVD)</b></td><td>All (mandatory for jets)</td><td>Fly runway heading until LGA 2.5 DME, then turn left heading 050</td><td class="num">2,500</td><td>Same as IFR departures</td></tr>
+      <tr><td><b>2. VFR without flight following</b></td><td>Fixed-wing</td><td>Fly runway heading</td><td class="num">VFR at 1,400</td><td>126.05 LaGuardia Tower (CBA)</td></tr>
+      <tr><td><b>3. Skyline</b></td><td>All, north or south</td><td>Skyline Route northbound / southbound</td><td>Given by Local</td><td>126.05 LaGuardia Tower (CBA)</td></tr>
+      <tr><td><b>4. Helicopter</b></td><td>Helicopters, west or east</td><td>West: via the Triborough Bridge<br>East: via the Throgs Neck Bridge</td><td class="num">1,000</td><td>126.05 LaGuardia Tower (CBA)</td></tr>
+    </tbody></table></div>
+    <p class="note">126.05 is LaGuardia CBA Tower (1Q). When 1Q is offline, use 118.7 (Local, 1I) or whoever covers LaGuardia Tower top-down.</p>
+
+    <div class="vfr-type">
+      <h3>1. VFR with flight following (SVD)</h3>
+      <div class="tw"><table><thead><tr><th>Aircraft</th><th>Direction</th><th>Departure instructions</th><th>Altitude</th></tr></thead><tbody><tr><td>All</td><td>All</td><td>Fly runway heading until LGA 2.5 DME, then turn left heading 050</td><td class="num">2,500</td></tr></tbody></table></div>
+      <ul>
+        <li><b>Frequency:</b> the same one IFR departures get. The first staffed of LGA Departure 120.4, HAARP 120.8, New York Center 125.325.</li>
+        <li><b>Delivery:</b></li>
+      </ul>
+      <blockquote>CLEARED OUT OF BRAVO AIRSPACE VIA FLY RUNWAY HEADING UNTIL LGA 2.5 DME, THEN TURN LEFT HEADING 050, MAINTAIN 2,500, DEPARTURE FREQUENCY (120.4), SQUAWK (code)</blockquote>
+      <ul>
+        <li><b>Local:</b> the aircraft leaves Tower's airspace vertically, so hand it to the N90 controller working LGA IFR departures as soon as it starts turning on course, traffic permitting. N90 radar identifies it.</li>
+      </ul>
+    </div>
+
+    <div class="vfr-type">
+      <h3>2. VFR without flight following</h3>
+      <ul>
+        <li><b>Who:</b> fixed-wing only. Jets can't use this; they need an SVD.</li>
+        <li><b>Delivery:</b> fly runway heading, maintain VFR at 1,400, frequency 126.05.</li>
+      </ul>
+      <blockquote>CLEARED OUT OF BRAVO AIRSPACE VIA FLY RUNWAY HEADING, MAINTAIN VFR AT 1,400, DEPARTURE FREQUENCY 126.05, SQUAWK (code)</blockquote>
+      <ul>
+        <li><b>Local:</b> the aircraft leaves laterally, so hand it to LaGuardia CBA (1Q) once it starts turning on course; 1Q radar identifies it. If 1Q isn't staffed, keep it on Local.</li>
+      </ul>
+      <blockquote>CONTACT LAGUARDIA TOWER, 126.05</blockquote>
+    </div>
+
+    <div class="vfr-type">
+      <h3>3. Skyline Route</h3>
+      <ul>
+        <li><b>The route:</b> a VFR transition over the Hudson between the Verrazano Bridge and the Alpine Tower. It needs a Class B clearance. Southbound aircraft fly the west bank; northbound fly the east bank. Altitude 1,300–2,000.</li>
+        <li><b>Delivery:</b> clear it for the route and direction; give <b>no altitude</b>. Local assigns it.</li>
+      </ul>
+      <blockquote>CLEARED OUT OF BRAVO AIRSPACE VIA THE SKYLINE ROUTE (NORTH/SOUTH)BOUND, DEPARTURE FREQUENCY 126.05, SQUAWK (code)</blockquote>
+      <ul>
+        <li><b>Local:</b> give a heading toward the river, inside Tower's airspace, and an altitude between 1,300 and 2,000.</li>
+      </ul>
+      <blockquote>FLY HEADING (heading), MAINTAIN (1,300–2,000)</blockquote>
+      <ul>
+        <li><b>Or</b>, traffic permitting, send it straight onto the route to get it out faster:</li>
+      </ul>
+      <blockquote>PROCEED DIRECT (landmark), JOIN THE SKYLINE ROUTE (direction)-BOUND, MAINTAIN (altitude)<br>e.g. "Proceed direct G-W-B, join the Skyline Route southbound, maintain 2,000."</blockquote>
+      <ul>
+        <li><b>Handoff:</b> leaves laterally, so to LaGuardia CBA (1Q) on 126.05, or stays with Local if 1Q isn't staffed.</li>
+        <li><b>Hudson SFRA:</b> the Class B floor over the Hudson and East Rivers is 1,300. Below that, transient aircraft run 1,000–1,300 and local operators below 1,000, keeping to the right shoreline.</li>
+      </ul>
+    </div>
+
+    <div class="vfr-type">
+      <h3>4. Helicopter departures</h3>
+      <div class="tw"><table><thead><tr><th>Direction</th><th>Departure instructions</th><th>Altitude</th></tr></thead><tbody>
+        <tr><td>West</td><td>Via the Triborough Bridge</td><td class="num">1,000</td></tr>
+        <tr><td>East</td><td>Via the Throgs Neck Bridge</td><td class="num">1,000</td></tr>
+      </tbody></table></div>
+      <blockquote>CLEARED OUT OF BRAVO AIRSPACE VIA THE (TRIBOROUGH / THROGS NECK) BRIDGE, MAINTAIN VFR AT 1,000, DEPARTURE FREQUENCY 126.05, SQUAWK (code)</blockquote>
+      <ul>
+        <li><b>Local:</b> leaves laterally, so hand to LaGuardia CBA (1Q) on 126.05, or keep it on Local if 1Q isn't staffed.</li>
+      </ul>
+    </div>
+    <p class="note">Source: vZNY LGA SOP › Clearance Delivery › VFR Departures, and Local Control › Departures, Skyline Route and New York SFRA.</p>
+  </section>
+
   <section class="page" id="p10" data-page hidden>
     <h2>Page 10 — LGA flight strips (VATSIM live)</h2>
     <p class="lead">Every aircraft prefiled out of KLGA or sitting on the ground at LGA, from the VATSIM data feed. Click a strip to see the full flight plan.</p>
@@ -982,6 +1453,12 @@ const PAGES = [
   {id:'p7', n:'Page 7', r:'CAT II 22/13'},
   {id:'p8', n:'Page 8', r:'CAT II 22/31'},
   {id:'p9', n:'Page 9', r:'28+ kt'},
+  {id:'v4', n:'VFR', r:'Depart 4'},
+  {id:'v31', n:'VFR', r:'Depart 31'},
+  {id:'v22', n:'VFR', r:'Depart 22'},
+  {id:'v13w', n:'VFR', r:'13 Whitestone'},
+  {id:'v13c', n:'VFR', r:'13 All climbs'},
+  {id:'v13f', n:'VFR', r:'13 Flushing/TNNIS'},
   {id:'p10', n:'Page 10', r:'Live strips'}
 ];
 const HOST = 'host:claude_browser';
@@ -1002,6 +1479,7 @@ const state = {
   pasting: {LGA:false, JFK:false, EWR:false},
   rwcmp: {LGA:null, JFK:null},  // real-world runways for comparing against a VATSIM ATIS: {land, dep, code, time}
   livePage: null,
+  liveVfr: null,  // VFR Departures page for the active configuration
   busy: false
 };
 
@@ -1280,6 +1758,7 @@ function renderActive(){
 
   // Shared with Page 10 so strips get departure procedures for the active configuration.
   state.ctx = (lga && pair && pair.land && pair.dep) ? {pair, owns, jfk, lga} : null;
+  state.liveVfr = vfrPageFor(state.ctx);
 
   const sec = $('active');
   sec.classList.toggle('test', test.on);
@@ -1342,43 +1821,68 @@ function setLivePage(id){
 }
 
 let userPickedPage = !!location.hash && PAGES.some(p => '#' + p.id === location.hash);
-// Pages 1-9 (the runway configurations) sit behind one dropdown button; every other page keeps its own tab.
-const DD_IDS = ['p1','p2','p3','p4','p5','p6','p7','p8','p9'];
-let ddOpen = false;
-function railLink(p, cur){
-  return '<a href="#' + p.id + '"' + (p.id === cur ? ' aria-current="page"' : '') + (p.id === state.livePage ? ' class="live"' : '') + '>' +
+// Grouped pages sit behind one dropdown button each; every other page keeps its own tab.
+//   cfg: Pages 1-9, the runway configurations (LIVE = state.livePage)
+//   vfr: VFR Departures, one page per SOP departure configuration (LIVE = state.liveVfr)
+const DD_GROUPS = [
+  {key:'cfg', ids:['p1','p2','p3','p4','p5','p6','p7','p8','p9'], n:'Pages 1–9', r:'Configurations', live: () => state.livePage},
+  {key:'vfr', ids:['v4','v31','v22','v13w','v13c','v13f'], n:'VFR', r:'Departures', live: () => state.liveVfr}
+];
+let ddOpen = null;  // key of the open group, or null
+// VFR page for the active configuration: by departure runway; runway 13 by the airspace ownership the IFR SID picks use
+function vfrPageFor(ctx){
+  if (!ctx || !ctx.pair || !ctx.pair.dep) return null;
+  const d = ctx.pair.dep, o = ctx.owns, j = ctx.jfk;
+  if (d === '4') return 'v4';
+  if (d === '31') return 'v31';
+  if (d === '22') return 'v22';
+  if (d !== '13') return null;
+  if (j.ils13L) return 'v13f';
+  if (o.belmont) return 'v13w';
+  if (o.coney) return 'v13c';
+  return 'v13f';
+}
+function railLink(p, cur, liveId){
+  return '<a href="#' + p.id + '"' + (p.id === cur ? ' aria-current="page"' : '') + (p.id === liveId ? ' class="live"' : '') + '>' +
     '<span class="n">' + esc(p.n) + '</span><span class="r">' + esc(p.r) + '</span></a>';
+}
+function ddButton(g, cur){
+  const inDD = PAGES.filter(p => g.ids.includes(p.id)), liveId = g.live();
+  const shown = inDD.find(p => p.id === cur);   // the page on screen, if it's in this group
+  const live = inDD.find(p => p.id === liveId);  // the page the ATIS points to, if any
+  const face = shown || live, open = ddOpen === g.key;
+  return '<div class="ddwrap">' +
+    '<button type="button" class="dd' + (shown ? ' cur' : '') + (live ? ' live' : '') + '" id="dd-btn-' + g.key + '" data-dd="' + g.key + '" aria-haspopup="true" aria-expanded="' + open + '" aria-controls="dd-menu-' + g.key + '">' +
+    '<span class="n">' + esc(face ? (g.key === 'cfg' ? face.n : g.n) : g.n) + '</span><span class="r">' + esc(face ? face.r : g.r) + '</span></button>' +
+    '<div class="ddmenu" id="dd-menu-' + g.key + '"' + (open ? '' : ' hidden') + '>' + inDD.map(p => railLink(p, cur, liveId)).join('') + '</div></div>';
 }
 function renderRail(){
   const cur = currentPage();
-  const inDD = PAGES.filter(p => DD_IDS.includes(p.id));
-  const shown = inDD.find(p => p.id === cur);          // the config page on screen, if any
-  const live = inDD.find(p => p.id === state.livePage); // the config page the ATIS points to, if any
-  const face = shown || live;
-  const btn = '<div class="ddwrap">' +
-    '<button type="button" class="dd' + (shown ? ' cur' : '') + (live ? ' live' : '') + '" id="dd-btn" aria-haspopup="true" aria-expanded="' + ddOpen + '" aria-controls="dd-menu">' +
-    '<span class="n">' + esc(face ? face.n : 'Pages 1–9') + '</span><span class="r">' + esc(face ? face.r : 'Configurations') + '</span></button>' +
-    '<div class="ddmenu" id="dd-menu"' + (ddOpen ? '' : ' hidden') + '>' + inDD.map(p => railLink(p, cur)).join('') + '</div></div>';
-  let html = '', placed = false;
+  let html = '';
+  const placed = new Set();
   PAGES.forEach(p => {
-    if (DD_IDS.includes(p.id)){ if (!placed){ html += btn; placed = true; } return; }
-    html += railLink(p, cur);
+    const g = DD_GROUPS.find(g => g.ids.includes(p.id));
+    if (g){ if (!placed.has(g.key)){ html += ddButton(g, cur); placed.add(g.key); } return; }
+    html += railLink(p, cur, state.livePage);
   });
   $('rail').innerHTML = html;
 }
-function setDD(open, focusBtn){
-  ddOpen = open;
-  const b = $('dd-btn'), m = $('dd-menu'); if (!b || !m) return;
-  b.setAttribute('aria-expanded', String(open)); m.hidden = !open;
-  if (open){ const a = m.querySelector('[aria-current="page"]') || m.querySelector('a'); if (a) a.focus(); }
-  else if (focusBtn) b.focus();
+function setDD(key, focusBtn){
+  const prev = ddOpen; ddOpen = key;
+  DD_GROUPS.forEach(g => {
+    const b = $('dd-btn-' + g.key), m = $('dd-menu-' + g.key); if (!b || !m) return;
+    const open = g.key === key;
+    b.setAttribute('aria-expanded', String(open)); m.hidden = !open;
+    if (open){ const a = m.querySelector('[aria-current="page"]') || m.querySelector('a.live') || m.querySelector('a'); if (a) a.focus(); }
+  });
+  if (!key && focusBtn && prev){ const b = $('dd-btn-' + prev); if (b) b.focus(); }
 }
-document.addEventListener('click', e => { if (ddOpen && !e.target.closest('.ddwrap')) setDD(false); });
+document.addEventListener('click', e => { if (ddOpen && !e.target.closest('.ddwrap')) setDD(null); });
 document.addEventListener('keydown', e => {
   if (!ddOpen) return;
-  if (e.key === 'Escape'){ setDD(false, true); return; }
+  if (e.key === 'Escape'){ setDD(null, true); return; }
   if (e.key === 'ArrowDown' || e.key === 'ArrowUp'){
-    const items = [...$('dd-menu').querySelectorAll('a')], i = items.indexOf(document.activeElement);
+    const items = [...$('dd-menu-' + ddOpen).querySelectorAll('a')], i = items.indexOf(document.activeElement);
     const n = e.key === 'ArrowDown' ? (i + 1) % items.length : (i - 1 + items.length) % items.length;
     items[n].focus(); e.preventDefault();
   }
@@ -1396,9 +1900,10 @@ function showPage(id, fromHash){
 }
 window.addEventListener('hashchange', () => { userPickedPage = true; showPage(currentPage(), true); });
 $('rail').addEventListener('click', e => {
-  if (e.target.closest('#dd-btn')){ setDD(!ddOpen); return; }
+  const ddb = e.target.closest('button[data-dd]');
+  if (ddb){ setDD(ddOpen === ddb.dataset.dd ? null : ddb.dataset.dd); return; }
   const a = e.target.closest('a[href^="#"]'); if (!a) return;
-  ddOpen = false;
+  ddOpen = null;
   userPickedPage = true;
   if (a.getAttribute('href') === location.hash){ e.preventDefault(); showPage(location.hash.slice(1), true); }
 });
