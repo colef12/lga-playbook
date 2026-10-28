@@ -154,7 +154,7 @@ details.fs.test{border-style:dashed;border-color:#d58a80}
 .fs-detail div{min-width:0;overflow-wrap:anywhere}
 .fs-detail b{display:block;font:600 .66rem var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:#4b5866}
 .fs-detail .wide{grid-column:1 / -1}
-@media (max-width:640px){.fs-grid{grid-template-columns:minmax(100px,1fr) 58px minmax(0,1fr)}.fs-cp{grid-row:auto;grid-column:3;white-space:normal}.fs-rt,.fs-rm{grid-column:1 / -1;grid-row:auto;border-top:1px solid var(--fs-rule)}}
+@media (max-width:640px){.fs-taxi{grid-row:auto}.fs-grid{grid-template-columns:minmax(100px,1fr) 58px minmax(0,1fr)}.fs-cp{grid-row:auto;grid-column:3;white-space:normal}.fs-rt,.fs-rm{grid-column:1 / -1;grid-row:auto;border-top:1px solid var(--fs-rule)}}
 /* test panel */
 .testp{background:var(--paper);border:2px dashed var(--fail);border-radius:4px;padding:14px 16px;display:flex;flex-direction:column;gap:12px}
 .testp-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px}
@@ -225,6 +225,17 @@ td.num,.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
 .note{font-size:.85rem;color:var(--muted)}
 .vfr-type{display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line);padding-top:12px}
 .vfr-sum td{vertical-align:top}
+.taxi-tbl tr.on td{background:var(--strip)}
+.taxi-tbl td{vertical-align:top}
+.taxi-live{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:700px){.taxi-live{grid-template-columns:1fr}}
+.taxi-side{border:1px solid var(--line);border-left:5px solid var(--accent);border-radius:4px;padding:10px 12px;background:var(--bg);display:flex;flex-direction:column;gap:4px}
+.taxi-side h4{margin:0;font:700 1.1rem var(--f-display);letter-spacing:.03em}
+.taxi-side .rt{font:600 .95rem var(--f-mono)}
+.taxi-side .lbl{font:600 .7rem var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.fs-taxi{grid-column:1 / -1;grid-row:4;border-top:1px solid var(--fs-rule);padding:3px 8px;font:600 .9rem var(--f-mono);display:flex;flex-wrap:wrap;gap:4px 14px}
+.fs-taxi .tx-k{font:700 .66rem var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:#4b5866;margin-right:4px}
+.fs-taxi .tx-pred{font:500 .8rem var(--f-body);color:#4b5866}
 footer{font-size:.8rem;color:var(--muted)}
 @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
 </style>
@@ -1216,6 +1227,31 @@ footer{font-size:.8rem;color:var(--muted)}
     <p class="note">Source: vZNY LGA SOP › Clearance Delivery › VFR Departures, and Local Control › Departures, Skyline Route and New York SFRA.</p>
   </section>
 
+  <section class="page" id="taxi" data-page hidden>
+    <h2>Ground — Preferred taxi routes</h2>
+    <p class="lead">The SOP's preferred taxi routes depend on the Depart / Land configuration and on which side of the airport the aircraft is on. They are a guide: weigh the traffic and issue what works.</p>
+    <div id="taxi-live"></div>
+    <h3>Which side</h3>
+    <ul>
+      <li><b>West side:</b> west of runway 4/22. Terminal A (the Marine Air Terminal, Spirit) and the west ramps.</li>
+      <li><b>East side:</b> east of runway 4/22. Terminal B (both concourses, all airlines except Spirit and Delta), Terminal C (Delta), and the remote stands.</li>
+      <li>On Page 10, aircraft on the ground get their side from where they're parked. Prefiles and arrivals have no stand yet, so the side is predicted from the airline: Spirit (NKS) West, everyone else East.</li>
+    </ul>
+    <h3>SOP table</h3>
+    <div class="tw"><table class="taxi-tbl"><thead>
+      <tr><th colspan="2">Configuration</th><th colspan="2">East side</th><th colspan="2">West side</th></tr>
+      <tr><th>Depart</th><th>Land</th><th>Inbound</th><th>Outbound</th><th>Inbound</th><th>Outbound</th></tr>
+    </thead><tbody id="taxi-rows"></tbody></table></div>
+    <p class="note">Depart 22 has no row in the SOP table.</p>
+    <h3>Ground rules that go with it</h3>
+    <ul>
+      <li>Taxiways A and B generally run in opposite directions, set by the configuration and where landing traffic will exit. Ground and Local agree how landing aircraft will taxi clear of the runway before the handoff to Ground, to keep the turnoffs clear.</li>
+      <li>Departing 13 and landing 4 or 22: Ground may cross runway 4/22 without coordinating with Local if the crossing traffic is holding short or can cross expeditiously, starts crossing before the arrival reaches a 2-mile final, and finishes by a 1-mile final. Local can suspend this at any time.</li>
+      <li>Sequence departures by alternating gate, then by alternating exit fix, then by performance (fastest first).</li>
+    </ul>
+    <p class="note">Source: vZNY LGA SOP › Ground Control › Preferred Taxi Routes, Aircraft Movement, Prearranged coordination for runway crossing, Departure Sequencing. Stand positions © OpenStreetMap contributors.</p>
+  </section>
+
   <section class="page" id="p10" data-page hidden>
     <h2>Page 10 — LGA flight strips (VATSIM live)</h2>
     <p class="lead">Every aircraft prefiled out of KLGA or sitting on the ground at LGA, from the VATSIM data feed. Click a strip to see the full flight plan.</p>
@@ -1460,6 +1496,7 @@ const PAGES = [
   {id:'v13w', n:'VFR', r:'13 Whitestone'},
   {id:'v13c', n:'VFR', r:'13 All climbs'},
   {id:'v13f', n:'VFR', r:'13 Flushing/TNNIS'},
+  {id:'taxi', n:'Ground', r:'Taxi routes'},
   {id:'p10', n:'Page 10', r:'Live strips'}
 ];
 const HOST = 'host:claude_browser';
@@ -1900,8 +1937,65 @@ window.addEventListener('hashchange', () => { userPickedPage = true; showPage(cu
   if (a.getAttribute('href') === location.hash){ e.preventDefault(); showPage(location.hash.slice(1), true); }
 }));
 
+/* ---------- taxi routes (SOP › Ground Control › Preferred Taxi Routes) ---------- */
+// key 'depart/land'. E = east of runway 4/22 (Terminals B and C), W = west (Terminal A / MAT).
+const TAXI = {
+  '4/4':  {E:{in:'B', out:'A, E, B'},      W:{in:'R, B, cross RWY 4 at E, D or CY (if rolling through the RWY 13 intersection)', out:'AA'}},
+  '4/13': {E:{in:'B', out:'A, E, B'},      W:{in:'B, P', out:'AA'}},
+  '4/31': {E:{in:'B, E, A', out:'B'},      W:{in:'A, G', out:'AA'}},
+  '13/4': {E:{in:'B', out:'A, E'},         W:{in:'R, B, cross RWY 4 at E, D or CY (if rolling through the RWY 13 intersection)', out:'AA or BB, sequenced with the east side'}},
+  '13/13':{E:{in:'A', out:'A, E'},         W:{in:'A, E, cross RWY 4 at F, E, D or CY', out:'AA or BB, sequenced with the east side'}},
+  '13/22':{E:{in:'B, E, A', out:'B, P'},   W:{in:'AA (Local may coordinate to taxi to the MAT)', out:'AA or BB, sequenced with the east side'}},
+  '31/4': {E:{in:'A', out:'B'},            W:{in:'R, B, cross RWY 4 at E, D or CY (if rolling through the RWY 13 intersection)', out:'E, B'}},
+  '31/22':{E:{in:'B, E, A', out:'B'},      W:{in:'AA (Local may coordinate to taxi to the MAT)', out:'P, B'}},
+  '31/31':{E:{in:'B, E, A', out:'A or B'}, W:{in:'B, E', out:'E, A'}}
+};
+// Stands: [area, ref, lat, lon]; A Terminal A, BW / BE Terminal B West / East concourse, C Terminal C, R remote, W west ramp. © OpenStreetMap contributors
+const STANDS = [["C","93",40.76796,-73.85962],["C","92",40.7677,-73.85989],["A","6",40.77398,-73.88365],["A","5",40.77379,-73.88345],["A","4",40.77354,-73.88349],["A","3",40.77343,-73.88378],["A","2",40.77345,-73.88417],["A","1",40.77344,-73.88477],["A","1A",40.77343,-73.88476],["BE","58",40.77296,-73.86945],["BE","58A",40.7729,-73.86939],["BE","57",40.77266,-73.86902],["BE","56",40.77241,-73.86861],["BE","55",40.77217,-73.86815],["BE","54",40.77249,-73.86766],["BE","53",40.77289,-73.8672],["BE","52",40.77325,-73.867],["BE","51",40.77363,-73.86712],["BE","51A",40.77366,-73.86719],["BE","47A",40.77433,-73.86803],["BE","47",40.77433,-73.86805],["BE","46",40.77467,-73.86805],["BE","45",40.77528,-73.86937],["BE","44",40.77511,-73.86964],["BE","43",40.77475,-73.86994],["BE","43A",40.77474,-73.87],["BW","28",40.7757,-73.87075],["BW","28A",40.77572,-73.87072],["BW","27",40.77602,-73.87066],["C","98",40.76942,-73.8585],["C","97",40.7691,-73.85873],["C","96",40.76886,-73.85901],["C","95",40.76862,-73.8593],["C","94",40.76838,-73.85959],["C","93",40.76814,-73.85989],["C","92",40.76797,-73.86008],["W","A",40.77912,-73.88223],["W","B",40.77946,-73.88195],["W","C",40.77981,-73.88167],["W","1",40.77942,-73.88366],["W","2",40.77948,-73.8831],["A","6",40.77418,-73.88298],["A","5",40.77365,-73.88294],["A","4",40.77316,-73.88321],["A","3",40.77313,-73.88383],["A","1",40.77308,-73.88475],["A","1A",40.77336,-73.88483],["BE","48",40.77394,-73.86812],["BE","48A",40.7741,-73.86794],["BE","48R",40.77403,-73.86814],["BE","42",40.77431,-73.87006],["C","61",40.77225,-73.86675],["C","63",40.77255,-73.8664],["C","65",40.7728,-73.8661],["C","67",40.77309,-73.86574],["C","69",40.77342,-73.86536],["C","73",40.77122,-73.86421],["C","79",40.77216,-73.86308],["C","78",40.77143,-73.86171],["C","76",40.77108,-73.86206],["C","74",40.77075,-73.86245],["C","72",40.77042,-73.86284],["C","70",40.77009,-73.86318],["C","86",40.76913,-73.86035],["C","88B",40.76979,-73.85968],["C","88A",40.76944,-73.85998],["C","62",40.77154,-73.86498],["C","64",40.77187,-73.86463],["C","68",40.77286,-73.86437],["C","66",40.77229,-73.86443],["BW","11",40.77473,-73.87224],["BW","12",40.77479,-73.87279],["BW","12A",40.77478,-73.87272],["BW","14",40.77513,-73.87305],["BW","14A",40.77497,-73.8732],["BW","15",40.77517,-73.87377],["BW","15A",40.77516,-73.87371],["BW","16",40.7752,-73.87427],["BW","16A",40.77519,-73.87421],["BW","17",40.77542,-73.87473],["BW","18",40.77581,-73.87443],["BW","18A",40.77577,-73.87448],["BW","19",40.77613,-73.87417],["BW","20",40.77638,-73.87383],["BW","22",40.77629,-73.87329],["BW","22A",40.77634,-73.87318],["BW","24A",40.77625,-73.87247],["BW","23",40.77629,-73.87277],["BW","24",40.77661,-73.87243],["BW","26",40.77644,-73.8719],["BW","29A",40.77543,-73.87123],["BW","29",40.77541,-73.87125],["BW","30A",40.77511,-73.87145],["BW","30",40.77495,-73.87138],["BW","31",40.77472,-73.87177],["C","89A",40.77072,-73.86122],["C","87",40.77042,-73.86148],["C","85",40.77009,-73.86176],["C","83",40.76969,-73.86228],["C","81",40.76945,-73.86253],["C","71",40.77099,-73.8646],["R","R2",40.77153,-73.86729],["R","R3",40.77141,-73.86768],["BE","41",40.77395,-73.87035],["BE","40/40A",40.77368,-73.87033],["BE","59",40.77334,-73.86969],["BE","59A",40.77328,-73.86966],["R","R18",40.77341,-73.87827],["R","R17",40.77375,-73.87789],["R","R16",40.774,-73.87775],["R","R15",40.77426,-73.87746],["R","R14",40.77462,-73.8772],["R","R13",40.77486,-73.87696],["R","R12",40.7752,-73.87672],["R","R11",40.77501,-73.87633],["R","R10",40.7748,-73.8759],["R","R9",40.77459,-73.87546],["R","R8",40.77441,-73.87516],["R","R7",40.77412,-73.87489],["R","R6",40.77432,-73.87464],["R","R5",40.77413,-73.87435],["R","R4",40.77431,-73.874],["C","80",40.76826,-73.86156],["W","5",40.77893,-73.88241],["W","7",40.77965,-73.88178],["W","6",40.77933,-73.88207],["W","8",40.77996,-73.88157],["A","2",40.77311,-73.88438],["C","89B",40.77019,-73.85983],["R","R1",40.77176,-73.86713],["C","77",40.77179,-73.86347],["C","75",40.77148,-73.86381],["C","84",40.76885,-73.86078]];
+const AREA = {A:'Terminal A', BW:'Terminal B West', BE:'Terminal B East', C:'Terminal C', R:'Remote', W:'West ramp'};
+const AREA_TAG = {A:'A', BW:'B', BE:'B', C:'C', R:'', W:'W'};
+// Side of the runway 4/22 centerline (threshold 4 → threshold 22), in a local flat frame
+const RWY422 = [[40.769167, -73.884123], [40.785438, -73.870683]];
+function sideOf(lat, lon){
+  const k = Math.cos(40.776 * Math.PI / 180), [a, b] = RWY422;
+  const cross = (b[1] - a[1]) * k * (lat - a[0]) - (b[0] - a[0]) * (lon - a[1]) * k;
+  return cross > 0 ? 'W' : 'E';
+}
+function nearestStand(lat, lon){
+  const k = Math.cos(lat * Math.PI / 180);
+  let best = null, bd = Infinity;
+  STANDS.forEach(s => { const dy = (s[2] - lat) * 111320, dx = (s[3] - lon) * 111320 * k, d = Math.hypot(dx, dy); if (d < bd){ bd = d; best = s; } });
+  return best && bd <= 45 ? {area: best[0], ref: best[1], m: Math.round(bd)} : null;
+}
+function taxiKey(ctx){ return ctx && ctx.pair && ctx.pair.dep && ctx.pair.land ? ctx.pair.dep + '/' + ctx.pair.land : null; }
+// For one strip: where it is, which side, and the SOP outbound route for the active configuration
+function taxiFor(x){
+  const fp = x.fp || {};
+  let side = null, stand = null, predicted = false;
+  if (typeof x.lat === 'number'){ side = sideOf(x.lat, x.lon); stand = nearestStand(x.lat, x.lon); }
+  else { side = /^NKS/.test(x.callsign || '') ? 'W' : 'E'; predicted = true; }
+  const key = taxiKey(state.ctx), row = key && TAXI[key];
+  return {side, stand, predicted, key, rwy: state.ctx ? state.ctx.pair.dep : null, out: row ? row[side].out : null};
+}
+function standTag(s){ return s ? (AREA_TAG[s.area] + s.ref) : ''; }
+function renderTaxi(){
+  const key = taxiKey(state.ctx), row = key && TAXI[key];
+  $('taxi-rows').innerHTML = Object.entries(TAXI).map(([k, r]) => {
+    const [d, l] = k.split('/');
+    return '<tr' + (k === key ? ' class="on"' : '') + '><td>' + d + '</td><td>' + l + '</td><td>' + esc(r.E.in) + '</td><td>' + esc(r.E.out) + '</td><td>' + esc(r.W.in) + '</td><td>' + esc(r.W.out) + '</td></tr>';
+  }).join('');
+  const box = $('taxi-live');
+  if (!state.ctx){ box.innerHTML = '<p class="note">No active configuration: load or paste the LGA ATIS to highlight the routes in use.</p>'; return; }
+  if (!row){ box.innerHTML = '<p class="note">Active configuration Depart ' + esc(state.ctx.pair.dep) + ' / Land ' + esc(state.ctx.pair.land) + ' has no row in the SOP taxi table.</p>'; return; }
+  const side = (s, name) => '<div class="taxi-side"><h4>' + name + '</h4>' +
+    '<span class="lbl">Outbound to RWY ' + esc(state.ctx.pair.dep) + '</span><span class="rt">' + esc(row[s].out) + '</span>' +
+    '<span class="lbl">Inbound from RWY ' + esc(state.ctx.pair.land) + '</span><span class="rt">' + esc(row[s].in) + '</span></div>';
+  box.innerHTML = '<p><b>Active: Depart ' + esc(state.ctx.pair.dep) + ' / Land ' + esc(state.ctx.pair.land) + '</b></p><div class="taxi-live">' +
+    side('E', 'East side · Terminals B and C') + side('W', 'West side · Terminal A / MAT') + '</div>';
+}
+
 function renderAll(){
-  ['LGA','JFK'].forEach(renderCard); renderActive(); showPage(currentPage(), true);
+  ['LGA','JFK'].forEach(renderCard); renderActive(); renderTaxi(); showPage(currentPage(), true);
   try { renderStrips(); } catch(e){ /* strips not initialised yet on first paint */ }
 }
 
@@ -2416,6 +2510,16 @@ function stripHTML(x){
     ['Assigned squawk', sq], ['Flight plan revision', fp.revision_id ?? '—']
   ];
   if (x.kind === 'gnd') det.push(['Position', x.nm.toFixed(1) + ' nm from LGA, ' + (x.gs | 0) + ' kt'], ['Squawking now', x.xpdr || '—']);
+  // helicopters leave via the bridges (VFR pages), not the taxi table
+  const HELO = /^(EC[0-9]{2}|AS[0-9]{2}|B06|B407|B412|B429|B505|R22|R44|R66|S76|S92|A109|A119|A139|A169|AW[0-9]{2,3}|H60|UH60|H135|H145|H160|EC75)$/;
+  const tx = HELO.test(fp.aircraft_short || '') ? null : taxiFor(x);
+  const txWhere = tx ? (tx.stand ? standTag(tx.stand) + ' · ' + AREA[tx.stand.area] : (tx.predicted ? 'Not parked yet' : 'Off-stand')) : '';
+  const txBand = tx ? '<div class="fs-taxi">' +
+      '<span><span class="tx-k">Parked</span>' + esc(txWhere) + '</span>' +
+      '<span><span class="tx-k">Side</span>' + (tx.side === 'W' ? 'WEST' : 'EAST') + (tx.predicted ? ' <span class="tx-pred">(predicted from airline)</span>' : '') + '</span>' +
+      '<span><span class="tx-k">Taxi</span>' + (tx.out ? 'RWY ' + esc(tx.rwy) + ' via ' + esc(tx.out) : (tx.key ? 'Not in SOP table (Depart ' + esc(tx.rwy) + ')' : 'No active configuration')) + '</span>' +
+    '</div>' : '';
+  if (tx) det.unshift(['Taxi (SOP preferred)', tx.out ? 'RUNWAY ' + tx.rwy + ', TAXI VIA ' + tx.out.toUpperCase() : '—'], ['Parked', txWhere + (tx.stand ? ' (' + tx.stand.m + ' m)' : '')]);
   const key = x.id || x.callsign;
   fs.byKey[key] = x;
   const hs = '<button type="button" class="fs-clr" data-clr="' + esc(key) + '" aria-label="Clearance for ' + esc(x.callsign) + '" title="Read the clearance">' + HEADSET_SVG + '</button>' +
@@ -2434,6 +2538,7 @@ function stripHTML(x){
                    : (fp.route && fp.flight_rules !== 'V' ? '<span class="fs-gate none" title="No valid exit">?</span>' : '')) + '</div>' +
       '<div class="fs-rt">' + (fp.route ? ((!x.test || x.applied) ? routeHTML(plan.segs) : esc([fp.departure || 'KLGA', fp.route, fp.arrival || ''].join(' ').trim())) : esc((fp.departure || '') + ' NO ROUTE FILED ' + (fp.arrival || ''))) + '</div>' +
       '<div class="fs-rm" title="' + esc(warnList.concat(plan.notes, [rmk]).join(' · ')) + '">' + warn + esc(rmk || ' ') + '</div>' +
+      txBand +
     '</div></summary>' +
     '<div class="fs-detail">' + procDet.map(d => '<div' + (d[0] === 'Why' || d[0] === 'Exit restrictions' ? ' class="wide"' : '') + (d[0] === 'Exit restrictions' && plan.warns.length ? ' style="color:#e10600;font-weight:700"' : '') + '><b>' + esc(d[0]) + '</b>' + esc(String(d[1])) + '</div>').join('') +
       (notes.length ? '<div class="wide"><b>Notes</b>' + esc(notes.join(' ')) + '</div>' : '') +
@@ -2455,7 +2560,7 @@ function renderStrips(){
     if (typeof p.latitude !== 'number') return;
     const nm = nmFromLGA(p.latitude, p.longitude);
     if (nm > 3 || (p.groundspeed || 0) > 40) return;
-    const x = {kind: 'gnd', callsign: p.callsign, fp: p.flight_plan || {}, nm, gs: p.groundspeed, xpdr: p.transponder};
+    const x = {kind: 'gnd', callsign: p.callsign, fp: p.flight_plan || {}, nm, gs: p.groundspeed, xpdr: p.transponder, lat: p.latitude, lon: p.longitude};
     if (!p.flight_plan) other.push(x);                          // no flight plan filed yet
     else if (p.flight_plan.departure === 'KLGA') gnd.push(x);   // LGA departures
     // anything else on the ground (arrivals, other departure airports) is left out
