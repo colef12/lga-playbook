@@ -11,7 +11,7 @@ img{max-width:100%}
 </style>
 </head>
 <body>
-<title>LGA Configuration Playbook</title>
+<title>LGA Playbook Lab</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
@@ -51,6 +51,8 @@ a{color:var(--accent)}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--paper)}
 .seg button{border:0;background:transparent;color:var(--ink);font:600 .85rem var(--f-body);padding:7px 12px;cursor:pointer}
 .seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.seg.sm{align-self:flex-start}
+.seg.sm button{font-size:.74rem;padding:4px 9px;min-height:30px}
 .btn{border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);font:600 .85rem var(--f-body);padding:7px 14px;border-radius:6px;cursor:pointer}
 .btn.ghost{background:transparent;color:var(--accent)}
 .btn:disabled{opacity:.55;cursor:default}
@@ -73,6 +75,10 @@ label.chk{display:inline-flex;align-items:center;gap:6px;font-size:.85rem;color:
 .refbtn{display:flex;flex-direction:column;align-items:flex-start;gap:1px;text-align:left;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:4px;padding:7px 9px;cursor:pointer;min-height:44px}
 .refbtn:hover{border-color:var(--accent)}
 .refbtn:last-child:nth-child(odd){grid-column:1 / -1}
+a.refbtn.sop{text-decoration:none;border-color:var(--accent);background:var(--accent);color:var(--accent-ink)}
+a.refbtn.sop:hover{filter:brightness(1.08)}
+a.refbtn.sop .rb-s{color:inherit;opacity:.85}
+a.refbtn.sop .rb-t{display:inline-flex;align-items:center;gap:6px}
 .rb-t{font:700 1rem var(--f-display);letter-spacing:.02em}
 .rb-s{font-size:.74rem;color:var(--muted)}
 dialog.pop{border:1px solid var(--line);border-radius:6px;padding:0;background:var(--paper);color:var(--ink);width:min(920px,calc(100vw - 32px));max-height:min(86vh,900px);box-shadow:0 18px 48px rgba(10,20,30,.35)}
@@ -168,6 +174,9 @@ details.fs.test{border-style:dashed;border-color:#d58a80}
 .atis-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
 .atis-id{font-family:var(--f-display);font-size:1.35rem;font-weight:700;letter-spacing:.04em}
 .code{font-family:var(--f-display);font-weight:700;font-size:1.6rem;line-height:1;min-width:1.4em;text-align:center;border:2px solid var(--ink);border-radius:4px;padding:2px 6px}
+/* VATSIM runway config vs real world: green = same landing and departure runways, red = different */
+.code.m-ok{color:var(--pass);border-color:var(--pass)}
+.code.m-bad{color:var(--fail);border-color:var(--fail)}
 .atis-meta{display:flex;flex-wrap:wrap;gap:6px}
 .chip{background:var(--chip);border-radius:3px;padding:1px 7px;font-family:var(--f-mono);font-size:.78rem;white-space:nowrap}
 .chip b{font-weight:600}
@@ -189,7 +198,20 @@ th{font:600 .74rem var(--f-body);text-transform:uppercase;letter-spacing:.07em;c
 td.num,.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
 .active table{background:color-mix(in srgb,var(--paper) 55%,transparent)}
 /* pages */
-.rail{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}
+.rail{display:flex;flex-wrap:wrap;gap:6px;padding-bottom:2px}
+/* config pages 1-9 live behind one dropdown button */
+.rail .ddwrap{position:relative;flex:0 0 auto;display:flex}
+.rail button.dd{font:inherit;cursor:pointer;text-align:left;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:6px 28px 6px 10px;display:flex;flex-direction:column;gap:1px;min-width:86px;position:relative}
+.rail button.dd::after{content:"";position:absolute;right:10px;top:50%;width:7px;height:7px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:translateY(-70%) rotate(45deg)}
+.rail button.dd[aria-expanded="true"]::after{transform:translateY(-20%) rotate(-135deg)}
+.rail button.dd .n{font:600 .7rem var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.rail button.dd .r{font:700 1.05rem var(--f-display);letter-spacing:.02em;white-space:nowrap}
+.rail button.dd.cur{border-color:var(--accent);box-shadow:inset 0 -3px 0 var(--accent)}
+.rail button.dd.live{background:var(--strip);border-color:var(--strip-line)}
+.rail button.dd.live .n::after{content:" · LIVE";color:var(--pass)}
+.rail .ddmenu{position:absolute;top:calc(100% + 4px);left:0;z-index:30;background:var(--paper);border:1px solid var(--line);border-radius:6px;box-shadow:0 12px 32px rgba(10,20,30,.25);padding:6px;display:flex;flex-direction:column;gap:4px;min-width:260px;max-width:calc(100vw - 32px)}
+.rail .ddmenu[hidden]{display:none}
+.rail .ddmenu a{flex-direction:row;align-items:center;justify-content:space-between;gap:14px;min-width:0;min-height:44px}
 .rail a{flex:0 0 auto;text-decoration:none;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:6px 10px;display:flex;flex-direction:column;gap:1px;min-width:86px}
 .rail a .n{font:600 .7rem var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .rail a .r{font:700 1.05rem var(--f-display);letter-spacing:.02em;white-space:nowrap}
@@ -208,13 +230,13 @@ footer{font-size:.8rem;color:var(--muted)}
 <div class="wrap">
   <header class="top">
     <div>
-      <h1>LGA Configuration Playbook</h1>
+      <h1>LGA Configuration Playbook <span style="font:700 .9rem var(--f-body);letter-spacing:.08em;color:var(--warn);border:1.5px solid currentColor;border-radius:3px;padding:1px 6px;vertical-align:6px">LAB</span></h1>
       <p class="sub">vZNY LaGuardia SOP Rev. 5 · VATSIM ATIS first, real-world D-ATIS where VATSIM has none</p>
     </div>
     <div class="controls">
       <button id="testbtn" class="btn ghost" type="button" aria-pressed="false">Test mode</button>
       <button id="refresh" class="btn" type="button">Refresh ATIS</button>
-      <label class="chk"><input id="auto" type="checkbox"> Auto every 2 min</label>
+      <label class="chk"><input id="auto" type="checkbox" checked> Auto every 2 min</label>
     </div>
   </header>
   <p id="status" class="status" role="status">Live ATIS loads through the Claude desktop app. You can paste an ATIS into any strip below.</p>
@@ -283,6 +305,7 @@ footer{font-size:.8rem;color:var(--muted)}
         <button type="button" class="refbtn" data-pop="amend"><span class="rb-t">Common Amendments</span><span class="rb-s">Airway and exit joins</span></button>
         <button type="button" class="refbtn" data-pop="prd"><span class="rb-t">ZNY PRD</span><span class="rb-s">Preferred routes</span></button>
         <button type="button" class="refbtn" data-pop="isect"><span class="rb-t">Intersection Distances</span><span class="rb-s">Usable runway lengths</span></button>
+        <a class="refbtn sop" href="https://wiki.nyartcc.org/wiki/LGA_SOP" target="_blank" rel="noopener"><span class="rb-t">LGA SOP <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h4v4M13 3 7 9M11 9.5V13H3V5h3.5"/></svg></span><span class="rb-s">Full SOP, new tab</span></a>
       </div>
     </article>
   </section>
@@ -947,6 +970,7 @@ footer{font-size:.8rem;color:var(--muted)}
 (() => {
 'use strict';
 const AIRPORTS = ['LGA','JFK','EWR'];
+const atisSrc = {LGA:'auto', JFK:'auto', EWR:'auto'};  // per-airport ATIS source; see the card toggles
 const PAGES = [
   {id:'overview', n:'Start', r:'Overview'},
   {id:'p1', n:'Page 1', r:'22 / 13'},
@@ -966,14 +990,17 @@ const URLS = {
   rw: icao => 'https://atis.info/api/K' + icao
 };
 
+// Pages serves Stable at / and the Lab at /lab/ on one site: keep their saved settings apart.
+const STORE_PREFIX = /\/lab\//.test(location.pathname) ? 'lgapblab.' : 'lgapb.';
 const store = {
-  get(k, d){ try{ const v = localStorage.getItem('lgapb.'+k); return v === null ? d : JSON.parse(v); }catch(e){ return d; } },
-  set(k, v){ try{ localStorage.setItem('lgapb.'+k, JSON.stringify(v)); }catch(e){} }
+  get(k, d){ try{ const v = localStorage.getItem(STORE_PREFIX+k); return v === null ? d : JSON.parse(v); }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem(STORE_PREFIX+k, JSON.stringify(v)); }catch(e){} }
 };
 
 const state = {
   atis: {LGA:null, JFK:null, EWR:null},  // {text, code, time, origin}
   pasting: {LGA:false, JFK:false, EWR:false},
+  rwcmp: {LGA:null, JFK:null},  // real-world runways for comparing against a VATSIM ATIS: {land, dep, code, time}
   livePage: null,
   busy: false
 };
@@ -996,11 +1023,11 @@ function parseAtis(raw){
   const t = ' ' + String(raw || '').toUpperCase().replace(/\s+/g, ' ') + ' ';
   const res = {land:[], dep:[], appr:[], wind:null, vis:null, ceil:null, rvr:[], climbs:[]};
   // approaches: "ILS RWY 22", "RNAV Z RWY 31", "VIS APCH RWY 4", "RIVER VISUAL RWY 13", "PARKWAY VISUAL 13L"
-  const apRe = new RegExp('\\b(ILS|LOC(?:ALIZER)?|RNAV(?:\\s*\\(GPS\\))?|RNP|GPS|VOR|VIS(?:UAL)?|RIVER|EXPRESSWAY|EXPWY|PARKWAY|PARK|CANARSIE)(?:\\s+[XYZ]\\b)?(?:\\s+(?:VISUAL|VIS))?(?:\\s+(?:APCHS?|APPROACH(?:ES)?|APPS))?\\s*(?:TO\\s+)?(?:RWYS?|RYS?|RUNWAYS?)?\\s*' + RWY + '\\b' + LIST_TAIL, 'g');
+  const apRe = new RegExp('\\b(ILS|LOC(?:ALIZER)?|RNAV(?:\\s*\\(?GPS\\)?)?|RNP|GPS|VOR|VIS(?:UAL)?|RIVER|EXPRESSWAY|EXPWY|PARKWAY|PARK|CANARSIE)(?:\\s+[XYZ]\\b)?(?:\\s+(?:VISUAL|VIS))?(?:\\s+(?:APCHS?|APPROACH(?:ES)?|APPS))?\\s*(?:TO\\s+)?(?:RWYS?|RYS?|RUNWAYS?)?\\s*' + RWY + '\\b' + LIST_TAIL, 'g');
   let m;
   while ((m = apRe.exec(t))){
     const kind = m[1].replace(/\s.*/, '');
-    const variant = (m[0].match(/\b(RNAV(?:\s*\(GPS\))?)\s+([XYZ])\b/) || [])[2] || '';
+    const variant = (m[0].match(/\b(RNAV(?:\s*\(?GPS\)?)?)\s+([XYZ])\b/) || [])[2] || '';
     grabList(m[2], m[3]).forEach(r => res.appr.push({kind, variant, rwy:r}));
   }
   const landRe = new RegExp('\\b(?:LDG|LNDG|LANDING|LAND|LND|ARR(?:IVALS?|IVING)?)\\s+(?:RWYS?|RYS?|RUNWAYS?)\\s*' + RWY + '\\b' + LIST_TAIL, 'g');
@@ -1164,6 +1191,28 @@ const MISSED = {
 /* ---------- rendering ---------- */
 function verdict(kind, text){ return '<span class="verdict v-' + kind + '">' + esc(text) + '</span>'; }
 
+// ATIS letter: green when the VATSIM ATIS lands and departs the same runways as the real-world ATIS, red when not,
+// neutral when there is no VATSIM ATIS (or nothing to compare against).
+// Landing runways with their advertised approach: "ILS 22", "RNAV Z 13L"; a runway with no named approach shows alone
+const APPR_NAME = {VIS:'VIS', VISUAL:'VIS', LOC:'LOC', LOCALIZER:'LOC', EXPRESSWAY:'EXPWY VIS', EXPWY:'EXPWY VIS', PARKWAY:'PARKWAY VIS', PARK:'PARKWAY VIS', RIVER:'RIVER VIS', CANARSIE:'CANARSIE VIS'};
+function ldgStr(p){
+  if (!p.land.length) return '—';
+  return p.land.map(r => {
+    const names = uniq(p.appr.filter(a => a.rwy === r).map(a => (APPR_NAME[a.kind] || a.kind) + (a.variant ? ' ' + a.variant : '')));
+    return (names.length ? names.join('/') + ' ' : '') + r;
+  }).join(', ');
+}
+function rwySetEq(a, b){ const x = [...new Set(a)].sort(), y = [...new Set(b)].sort(); return x.length === y.length && x.every((v, i) => v === y[i]); }
+function codeBox(ap, a, p){
+  const letter = esc(a && a.code ? a.code : '–');
+  const r = state.rwcmp[ap];
+  const isVatsim = a && !test.on && !a.rw && a.origin !== 'Pasted';
+  if (!isVatsim || !r || !p || !p.land.length || !p.dep.length || !r.land.length || !r.dep.length)
+    return '<div class="code" aria-label="ATIS code ' + letter + '">' + letter + '</div>';
+  const ok = rwySetEq(p.land, r.land) && rwySetEq(p.dep, r.dep);
+  const rwTxt = 'Real world' + (r.code ? ' ' + r.code : '') + ': LDG ' + r.land.join(', ') + ' · DEP ' + r.dep.join(', ');
+  return '<div class="code ' + (ok ? 'm-ok' : 'm-bad') + '" title="' + esc((ok ? 'Matches real world. ' : 'Differs from real world. ') + rwTxt) + '" aria-label="ATIS code ' + letter + ', ' + (ok ? 'runways match' : 'runways differ from') + ' real world">' + letter + '</div>';
+}
 function renderCard(ap){
   const el = $('card-' + ap);
   const a = cur(ap);
@@ -1175,10 +1224,15 @@ function renderCard(ap){
   const tag = !a ? '' : test.on ? '<span class="src-tag src-t">Test</span>' : a.rw ? '<span class="src-tag src-r">Real world</span>' : a.origin === 'Pasted' ? '<span class="src-tag src-p">Pasted</span>' : '<span class="src-tag src-v">VATSIM</span>';
   let html = '<div class="atis-head"><div><div class="atis-id">K' + ap + tag + '</div><div class="muted" style="font-size:.78rem">' +
     (a ? esc(a.origin) + (a.time ? ' · ' + esc(a.time) : '') : 'No ATIS') + '</div></div>' +
-    '<div class="code" aria-label="ATIS code">' + esc(a && a.code ? a.code : '–') + '</div></div>';
+    codeBox(ap, a, p) + '</div>';
+  if (!test.on){
+    html += '<div class="seg sm" role="group" aria-label="K' + ap + ' ATIS source" title="Auto: VATSIM first, real-world D-ATIS where VATSIM has none. Resets to Auto on reload.">' +
+      [['auto','Auto'],['vatsim','VATSIM'],['rw','Real world']].map(([v, l]) =>
+        '<button type="button" data-ap="' + ap + '" data-src="' + v + '" aria-pressed="' + (atisSrc[ap] === v) + '">' + l + '</button>').join('') + '</div>';
+  }
   if (p){
     html += '<div class="atis-meta">' +
-      '<span class="chip">LDG <b>' + esc(p.land.join(', ') || '—') + '</b></span>' +
+      '<span class="chip">LDG <b>' + esc(ldgStr(p)) + '</b></span>' +
       '<span class="chip">DEP <b>' + esc(p.dep.join(', ') || '—') + '</b></span>' +
       '<span class="chip">' + esc(windStr(p.wind)) + '</span>' +
       '<span class="chip">' + esc(wxStr(p)) + '</span>' +
@@ -1288,12 +1342,47 @@ function setLivePage(id){
 }
 
 let userPickedPage = !!location.hash && PAGES.some(p => '#' + p.id === location.hash);
+// Pages 1-9 (the runway configurations) sit behind one dropdown button; every other page keeps its own tab.
+const DD_IDS = ['p1','p2','p3','p4','p5','p6','p7','p8','p9'];
+let ddOpen = false;
+function railLink(p, cur){
+  return '<a href="#' + p.id + '"' + (p.id === cur ? ' aria-current="page"' : '') + (p.id === state.livePage ? ' class="live"' : '') + '>' +
+    '<span class="n">' + esc(p.n) + '</span><span class="r">' + esc(p.r) + '</span></a>';
+}
 function renderRail(){
   const cur = currentPage();
-  $('rail').innerHTML = PAGES.map(p =>
-    '<a href="#' + p.id + '"' + (p.id === cur ? ' aria-current="page"' : '') + (p.id === state.livePage ? ' class="live"' : '') + '>' +
-    '<span class="n">' + esc(p.n) + '</span><span class="r">' + esc(p.r) + '</span></a>').join('');
+  const inDD = PAGES.filter(p => DD_IDS.includes(p.id));
+  const shown = inDD.find(p => p.id === cur);          // the config page on screen, if any
+  const live = inDD.find(p => p.id === state.livePage); // the config page the ATIS points to, if any
+  const face = shown || live;
+  const btn = '<div class="ddwrap">' +
+    '<button type="button" class="dd' + (shown ? ' cur' : '') + (live ? ' live' : '') + '" id="dd-btn" aria-haspopup="true" aria-expanded="' + ddOpen + '" aria-controls="dd-menu">' +
+    '<span class="n">' + esc(face ? face.n : 'Pages 1–9') + '</span><span class="r">' + esc(face ? face.r : 'Configurations') + '</span></button>' +
+    '<div class="ddmenu" id="dd-menu"' + (ddOpen ? '' : ' hidden') + '>' + inDD.map(p => railLink(p, cur)).join('') + '</div></div>';
+  let html = '', placed = false;
+  PAGES.forEach(p => {
+    if (DD_IDS.includes(p.id)){ if (!placed){ html += btn; placed = true; } return; }
+    html += railLink(p, cur);
+  });
+  $('rail').innerHTML = html;
 }
+function setDD(open, focusBtn){
+  ddOpen = open;
+  const b = $('dd-btn'), m = $('dd-menu'); if (!b || !m) return;
+  b.setAttribute('aria-expanded', String(open)); m.hidden = !open;
+  if (open){ const a = m.querySelector('[aria-current="page"]') || m.querySelector('a'); if (a) a.focus(); }
+  else if (focusBtn) b.focus();
+}
+document.addEventListener('click', e => { if (ddOpen && !e.target.closest('.ddwrap')) setDD(false); });
+document.addEventListener('keydown', e => {
+  if (!ddOpen) return;
+  if (e.key === 'Escape'){ setDD(false, true); return; }
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp'){
+    const items = [...$('dd-menu').querySelectorAll('a')], i = items.indexOf(document.activeElement);
+    const n = e.key === 'ArrowDown' ? (i + 1) % items.length : (i - 1 + items.length) % items.length;
+    items[n].focus(); e.preventDefault();
+  }
+});
 function currentPage(){
   const h = location.hash.slice(1);
   const valid = PAGES.some(p => p.id === h);
@@ -1307,7 +1396,9 @@ function showPage(id, fromHash){
 }
 window.addEventListener('hashchange', () => { userPickedPage = true; showPage(currentPage(), true); });
 $('rail').addEventListener('click', e => {
+  if (e.target.closest('#dd-btn')){ setDD(!ddOpen); return; }
   const a = e.target.closest('a[href^="#"]'); if (!a) return;
+  ddOpen = false;
   userPickedPage = true;
   if (a.getAttribute('href') === location.hash){ e.preventDefault(); showPage(location.hash.slice(1), true); }
 });
@@ -1488,26 +1579,34 @@ async function refresh(){
   if (state.busy) return;
   if (!DIRECT && !mcp){ setStatus('Live ATIS needs this page open in the Claude desktop app. Paste ATIS into the strips instead.', true); return; }
   state.busy = true; $('refresh').disabled = true;
+  // Per airport: 'auto' (VATSIM first, real world fallback), 'vatsim' only, or 'rw' only
+  const mode = {...atisSrc};
   try {
     const got = {};
     // 1. VATSIM first, all three airports from one feed
-    setStatus('Reading VATSIM ATIS…');
     let data = null;
-    try { data = await fetchJson(URLS.vatsim, 400000); }
-    catch(e){ if (e && e.code) throw e; data = null; }
+    if (AIRPORTS.some(ap => mode[ap] !== 'rw')){
+      setStatus('Reading VATSIM ATIS…');
+      try { data = await fetchJson(URLS.vatsim, 400000); }
+      catch(e){ if (e && e.code) throw e; data = null; }
+    }
     const missing = [];
     AIRPORTS.forEach(ap => {
       const hits = (Array.isArray(data) ? data : []).filter(a => new RegExp('^K' + ap + '(_[A-Z])?_ATIS$').test(a.callsign || ''));
-      if (!hits.length){ missing.push(ap); return; }
+      if (mode[ap] === 'rw' || !hits.length){
+        if (mode[ap] === 'vatsim'){ if (!(state.atis[ap] && state.atis[ap].origin === 'Pasted')) state.atis[ap] = null; }
+        else missing.push(ap);
+        return;
+      }
       hits.sort((a, b) => (a.callsign || '').localeCompare(b.callsign || ''));
       const text = hits.map(h => (h.text_atis || []).join(' ')).join('  ');
       const t = hits.map(h => h.last_updated).filter(Boolean).sort().pop();
       state.atis[ap] = {text, code: hits.map(h => h.atis_code).filter(Boolean).join('/'), time: t ? t.slice(11, 16) + 'Z' : '', origin: hits.map(h => h.callsign).join(', '), rw: false};
       got[ap] = 'VATSIM';
     });
-    // 2. Real-world D-ATIS for any airport without a VATSIM ATIS
+    // 2. Real-world D-ATIS for airports set to Real world, and Auto airports without a VATSIM ATIS
     for (const ap of missing){
-      setStatus('No VATSIM ATIS for K' + ap + '. Reading real-world D-ATIS…');
+      setStatus(mode[ap] === 'rw' ? 'Reading real-world D-ATIS for K' + ap + '…' : 'No VATSIM ATIS for K' + ap + '. Reading real-world D-ATIS…');
       try {
         const d = await fetchJson(URLS.rw(ap), 20000);
         const arr = (Array.isArray(d) ? d : [d]).filter(x => x && x.datis);
@@ -1519,8 +1618,21 @@ async function refresh(){
         if (!(state.atis[ap] && state.atis[ap].origin === 'Pasted')) state.atis[ap] = null;
       }
     }
+    // 3. Real-world runways for every card showing a VATSIM ATIS, so its letter can show whether the configs agree
+    for (const ap of Object.keys(state.rwcmp)){
+      state.rwcmp[ap] = null;
+      if (got[ap] !== 'VATSIM') continue;
+      try {
+        const d = await fetchJson(URLS.rw(ap), 20000);
+        const arr = (Array.isArray(d) ? d : [d]).filter(x => x && x.datis);
+        if (!arr.length) continue;
+        const rp = parseAtis(arr.map(x => x.datis).join('  '));
+        state.rwcmp[ap] = {land: rp.land, dep: rp.dep, code: arr.map(x => x.code).filter(Boolean).join('/'), time: arr[0].time ? arr[0].time + 'Z' : ''};
+      } catch(e){ /* comparison is optional: leave the letter neutral */ }
+    }
     setStatus('ATIS read at ' + new Date().toISOString().slice(11, 16) + 'Z · ' +
-      AIRPORTS.map(ap => 'K' + ap + ': ' + (got[ap] || (state.atis[ap] && state.atis[ap].origin === 'Pasted' ? 'pasted' : 'none'))).join(' · '));
+      AIRPORTS.map(ap => 'K' + ap + ': ' + (got[ap] || (state.atis[ap] && state.atis[ap].origin === 'Pasted' ? 'pasted' : 'none')) +
+        (mode[ap] === 'auto' ? '' : ' (forced)')).join(' · '));
     renderAll();
   } catch(e){
     setStatus(errMsg(e), true);
@@ -2164,9 +2276,18 @@ $('fs-out').addEventListener('click', e => {
 
 /* ---------- controls ---------- */
 $('refresh').addEventListener('click', refresh);
+// ATIS source per airport card: a momentary override, never saved, so every load starts on Auto
+document.querySelector('.strips').addEventListener('click', e => {
+  const b = e.target.closest('button[data-src]'); if (!b) return;
+  const ap = b.dataset.ap; if (!ap || b.dataset.src === atisSrc[ap]) return;
+  atisSrc[ap] = b.dataset.src;
+  renderCard(ap);
+  if (state.busy){ const w = setInterval(() => { if (!state.busy){ clearInterval(w); refresh(); } }, 250); }
+  else refresh();
+});
 let timer = null;
 const autoEl = $('auto');
-autoEl.checked = !!store.get('auto', false);
+autoEl.checked = !!store.get('auto', true);
 function setAuto(on){
   store.set('auto', on);
   if (timer){ clearInterval(timer); timer = null; }
@@ -2181,12 +2302,14 @@ renderAll();
     setStatus('Ready. Refresh reads live ATIS directly from VATSIM, with real-world D-ATIS where VATSIM has none.');
     fsStatus('Strips load directly from the VATSIM data feed.');
     setAuto(autoEl.checked);
+    refresh();
     return;
   }
   try { mcp = window.claude && window.claude.use ? await window.claude.use('mcp') : null; } catch(e){ mcp = null; }
   if (!mcp){ setStatus('Live ATIS works when this page is open in the Claude desktop app. Paste an ATIS into any strip to use the Playbook here.'); return; }
   setStatus('Ready. Refresh reads live ATIS through the desktop app\'s browser.');
   setAuto(autoEl.checked);
+  refresh();
 })();
 })();
 </script>
