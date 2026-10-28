@@ -51,6 +51,8 @@ a{color:var(--accent)}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--paper)}
 .seg button{border:0;background:transparent;color:var(--ink);font:600 .85rem var(--f-body);padding:7px 12px;cursor:pointer}
 .seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.seg.sm{align-self:flex-start}
+.seg.sm button{font-size:.74rem;padding:4px 9px;min-height:30px}
 .btn{border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);font:600 .85rem var(--f-body);padding:7px 14px;border-radius:6px;cursor:pointer}
 .btn.ghost{background:transparent;color:var(--accent)}
 .btn:disabled{opacity:.55;cursor:default}
@@ -230,11 +232,6 @@ footer{font-size:.8rem;color:var(--muted)}
     </div>
     <div class="controls">
       <button id="testbtn" class="btn ghost" type="button" aria-pressed="false">Test mode</button>
-      <div class="seg" id="srcseg" role="group" aria-label="ATIS source" title="Auto: VATSIM first, real-world D-ATIS where VATSIM has none. Resets to Auto on reload.">
-        <button type="button" data-src="auto" aria-pressed="true">Auto</button>
-        <button type="button" data-src="vatsim" aria-pressed="false">VATSIM</button>
-        <button type="button" data-src="rw" aria-pressed="false">Real world</button>
-      </div>
       <button id="refresh" class="btn" type="button">Refresh ATIS</button>
       <label class="chk"><input id="auto" type="checkbox" checked> Auto every 2 min</label>
     </div>
@@ -970,6 +967,7 @@ footer{font-size:.8rem;color:var(--muted)}
 (() => {
 'use strict';
 const AIRPORTS = ['LGA','JFK','EWR'];
+const atisSrc = {LGA:'auto', JFK:'auto', EWR:'auto'};  // per-airport ATIS source; see the card toggles
 const PAGES = [
   {id:'overview', n:'Start', r:'Overview'},
   {id:'p1', n:'Page 1', r:'22 / 13'},
@@ -1201,6 +1199,11 @@ function renderCard(ap){
   let html = '<div class="atis-head"><div><div class="atis-id">K' + ap + tag + '</div><div class="muted" style="font-size:.78rem">' +
     (a ? esc(a.origin) + (a.time ? ' · ' + esc(a.time) : '') : 'No ATIS') + '</div></div>' +
     '<div class="code" aria-label="ATIS code">' + esc(a && a.code ? a.code : '–') + '</div></div>';
+  if (!test.on){
+    html += '<div class="seg sm" role="group" aria-label="K' + ap + ' ATIS source" title="Auto: VATSIM first, real-world D-ATIS where VATSIM has none. Resets to Auto on reload.">' +
+      [['auto','Auto'],['vatsim','VATSIM'],['rw','Real world']].map(([v, l]) =>
+        '<button type="button" data-ap="' + ap + '" data-src="' + v + '" aria-pressed="' + (atisSrc[ap] === v) + '">' + l + '</button>').join('') + '</div>';
+  }
   if (p){
     html += '<div class="atis-meta">' +
       '<span class="chip">LDG <b>' + esc(p.land.join(', ') || '—') + '</b></span>' +
@@ -1550,12 +1553,13 @@ async function refresh(){
   if (state.busy) return;
   if (!DIRECT && !mcp){ setStatus('Live ATIS needs this page open in the Claude desktop app. Paste ATIS into the strips instead.', true); return; }
   state.busy = true; $('refresh').disabled = true;
-  const mode = atisSrc;  // 'auto' (VATSIM first, real world fallback), 'vatsim' only, or 'rw' only
+  // Per airport: 'auto' (VATSIM first, real world fallback), 'vatsim' only, or 'rw' only
+  const mode = {...atisSrc};
   try {
     const got = {};
     // 1. VATSIM first, all three airports from one feed
     let data = null;
-    if (mode !== 'rw'){
+    if (AIRPORTS.some(ap => mode[ap] !== 'rw')){
       setStatus('Reading VATSIM ATIS…');
       try { data = await fetchJson(URLS.vatsim, 400000); }
       catch(e){ if (e && e.code) throw e; data = null; }
@@ -1563,17 +1567,20 @@ async function refresh(){
     const missing = [];
     AIRPORTS.forEach(ap => {
       const hits = (Array.isArray(data) ? data : []).filter(a => new RegExp('^K' + ap + '(_[A-Z])?_ATIS$').test(a.callsign || ''));
-      if (!hits.length){ missing.push(ap); return; }
+      if (mode[ap] === 'rw' || !hits.length){
+        if (mode[ap] === 'vatsim'){ if (!(state.atis[ap] && state.atis[ap].origin === 'Pasted')) state.atis[ap] = null; }
+        else missing.push(ap);
+        return;
+      }
       hits.sort((a, b) => (a.callsign || '').localeCompare(b.callsign || ''));
       const text = hits.map(h => (h.text_atis || []).join(' ')).join('  ');
       const t = hits.map(h => h.last_updated).filter(Boolean).sort().pop();
       state.atis[ap] = {text, code: hits.map(h => h.atis_code).filter(Boolean).join('/'), time: t ? t.slice(11, 16) + 'Z' : '', origin: hits.map(h => h.callsign).join(', '), rw: false};
       got[ap] = 'VATSIM';
     });
-    // 2. Real-world D-ATIS for any airport without a VATSIM ATIS (every airport in Real world mode, none in VATSIM mode)
-    if (mode === 'vatsim') missing.forEach(ap => { if (!(state.atis[ap] && state.atis[ap].origin === 'Pasted')) state.atis[ap] = null; });
-    for (const ap of (mode === 'vatsim' ? [] : missing)){
-      setStatus(mode === 'rw' ? 'Reading real-world D-ATIS for K' + ap + '…' : 'No VATSIM ATIS for K' + ap + '. Reading real-world D-ATIS…');
+    // 2. Real-world D-ATIS for airports set to Real world, and Auto airports without a VATSIM ATIS
+    for (const ap of missing){
+      setStatus(mode[ap] === 'rw' ? 'Reading real-world D-ATIS for K' + ap + '…' : 'No VATSIM ATIS for K' + ap + '. Reading real-world D-ATIS…');
       try {
         const d = await fetchJson(URLS.rw(ap), 20000);
         const arr = (Array.isArray(d) ? d : [d]).filter(x => x && x.datis);
@@ -1585,8 +1592,9 @@ async function refresh(){
         if (!(state.atis[ap] && state.atis[ap].origin === 'Pasted')) state.atis[ap] = null;
       }
     }
-    setStatus('ATIS read at ' + new Date().toISOString().slice(11, 16) + 'Z' + (mode === 'auto' ? '' : ' (' + (mode === 'rw' ? 'real world only' : 'VATSIM only') + ')') + ' · ' +
-      AIRPORTS.map(ap => 'K' + ap + ': ' + (got[ap] || (state.atis[ap] && state.atis[ap].origin === 'Pasted' ? 'pasted' : 'none'))).join(' · '));
+    setStatus('ATIS read at ' + new Date().toISOString().slice(11, 16) + 'Z · ' +
+      AIRPORTS.map(ap => 'K' + ap + ': ' + (got[ap] || (state.atis[ap] && state.atis[ap].origin === 'Pasted' ? 'pasted' : 'none')) +
+        (mode[ap] === 'auto' ? '' : ' (forced)')).join(' · '));
     renderAll();
   } catch(e){
     setStatus(errMsg(e), true);
@@ -2230,12 +2238,12 @@ $('fs-out').addEventListener('click', e => {
 
 /* ---------- controls ---------- */
 $('refresh').addEventListener('click', refresh);
-// ATIS source: a momentary override, never saved, so every load starts on Auto
-let atisSrc = 'auto';
-$('srcseg').addEventListener('click', e => {
-  const b = e.target.closest('button[data-src]'); if (!b || b.dataset.src === atisSrc) return;
-  atisSrc = b.dataset.src;
-  $('srcseg').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+// ATIS source per airport card: a momentary override, never saved, so every load starts on Auto
+document.querySelector('.strips').addEventListener('click', e => {
+  const b = e.target.closest('button[data-src]'); if (!b) return;
+  const ap = b.dataset.ap; if (!ap || b.dataset.src === atisSrc[ap]) return;
+  atisSrc[ap] = b.dataset.src;
+  renderCard(ap);
   if (state.busy){ const w = setInterval(() => { if (!state.busy){ clearInterval(w); refresh(); } }, 250); }
   else refresh();
 });
