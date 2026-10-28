@@ -174,6 +174,9 @@ details.fs.test{border-style:dashed;border-color:#d58a80}
 .atis-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
 .atis-id{font-family:var(--f-display);font-size:1.35rem;font-weight:700;letter-spacing:.04em}
 .code{font-family:var(--f-display);font-weight:700;font-size:1.6rem;line-height:1;min-width:1.4em;text-align:center;border:2px solid var(--ink);border-radius:4px;padding:2px 6px}
+/* VATSIM runway config vs real world: green = same landing and departure runways, red = different */
+.code.m-ok{color:var(--pass);border-color:var(--pass)}
+.code.m-bad{color:var(--fail);border-color:var(--fail)}
 .atis-meta{display:flex;flex-wrap:wrap;gap:6px}
 .chip{background:var(--chip);border-radius:3px;padding:1px 7px;font-family:var(--f-mono);font-size:.78rem;white-space:nowrap}
 .chip b{font-weight:600}
@@ -997,6 +1000,7 @@ const store = {
 const state = {
   atis: {LGA:null, JFK:null, EWR:null},  // {text, code, time, origin}
   pasting: {LGA:false, JFK:false, EWR:false},
+  rwcmp: {LGA:null, JFK:null},  // real-world runways for comparing against a VATSIM ATIS: {land, dep, code, time}
   livePage: null,
   busy: false
 };
@@ -1187,6 +1191,19 @@ const MISSED = {
 /* ---------- rendering ---------- */
 function verdict(kind, text){ return '<span class="verdict v-' + kind + '">' + esc(text) + '</span>'; }
 
+// ATIS letter: green when the VATSIM ATIS lands and departs the same runways as the real-world ATIS, red when not,
+// neutral when there is no VATSIM ATIS (or nothing to compare against).
+function rwySetEq(a, b){ const x = [...new Set(a)].sort(), y = [...new Set(b)].sort(); return x.length === y.length && x.every((v, i) => v === y[i]); }
+function codeBox(ap, a, p){
+  const letter = esc(a && a.code ? a.code : '–');
+  const r = state.rwcmp[ap];
+  const isVatsim = a && !test.on && !a.rw && a.origin !== 'Pasted';
+  if (!isVatsim || !r || !p || !p.land.length || !p.dep.length || !r.land.length || !r.dep.length)
+    return '<div class="code" aria-label="ATIS code ' + letter + '">' + letter + '</div>';
+  const ok = rwySetEq(p.land, r.land) && rwySetEq(p.dep, r.dep);
+  const rwTxt = 'Real world' + (r.code ? ' ' + r.code : '') + ': LDG ' + r.land.join(', ') + ' · DEP ' + r.dep.join(', ');
+  return '<div class="code ' + (ok ? 'm-ok' : 'm-bad') + '" title="' + esc((ok ? 'Matches real world. ' : 'Differs from real world. ') + rwTxt) + '" aria-label="ATIS code ' + letter + ', ' + (ok ? 'runways match' : 'runways differ from') + ' real world">' + letter + '</div>';
+}
 function renderCard(ap){
   const el = $('card-' + ap);
   const a = cur(ap);
@@ -1198,7 +1215,7 @@ function renderCard(ap){
   const tag = !a ? '' : test.on ? '<span class="src-tag src-t">Test</span>' : a.rw ? '<span class="src-tag src-r">Real world</span>' : a.origin === 'Pasted' ? '<span class="src-tag src-p">Pasted</span>' : '<span class="src-tag src-v">VATSIM</span>';
   let html = '<div class="atis-head"><div><div class="atis-id">K' + ap + tag + '</div><div class="muted" style="font-size:.78rem">' +
     (a ? esc(a.origin) + (a.time ? ' · ' + esc(a.time) : '') : 'No ATIS') + '</div></div>' +
-    '<div class="code" aria-label="ATIS code">' + esc(a && a.code ? a.code : '–') + '</div></div>';
+    codeBox(ap, a, p) + '</div>';
   if (!test.on){
     html += '<div class="seg sm" role="group" aria-label="K' + ap + ' ATIS source" title="Auto: VATSIM first, real-world D-ATIS where VATSIM has none. Resets to Auto on reload.">' +
       [['auto','Auto'],['vatsim','VATSIM'],['rw','Real world']].map(([v, l]) =>
@@ -1591,6 +1608,18 @@ async function refresh(){
         if (e && e.code) throw e;
         if (!(state.atis[ap] && state.atis[ap].origin === 'Pasted')) state.atis[ap] = null;
       }
+    }
+    // 3. Real-world runways for every card showing a VATSIM ATIS, so its letter can show whether the configs agree
+    for (const ap of Object.keys(state.rwcmp)){
+      state.rwcmp[ap] = null;
+      if (got[ap] !== 'VATSIM') continue;
+      try {
+        const d = await fetchJson(URLS.rw(ap), 20000);
+        const arr = (Array.isArray(d) ? d : [d]).filter(x => x && x.datis);
+        if (!arr.length) continue;
+        const rp = parseAtis(arr.map(x => x.datis).join('  '));
+        state.rwcmp[ap] = {land: rp.land, dep: rp.dep, code: arr.map(x => x.code).filter(Boolean).join('/'), time: arr[0].time ? arr[0].time + 'Z' : ''};
+      } catch(e){ /* comparison is optional: leave the letter neutral */ }
     }
     setStatus('ATIS read at ' + new Date().toISOString().slice(11, 16) + 'Z · ' +
       AIRPORTS.map(ap => 'K' + ap + ': ' + (got[ap] || (state.atis[ap] && state.atis[ap].origin === 'Pasted' ? 'pasted' : 'none')) +
