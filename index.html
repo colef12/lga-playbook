@@ -199,19 +199,19 @@ td.num,.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
 .active table{background:color-mix(in srgb,var(--paper) 55%,transparent)}
 /* pages */
 .rail{display:flex;flex-wrap:wrap;gap:6px;padding-bottom:2px}
-/* config pages 1-9 live behind one dropdown button */
-.rail .ddwrap{position:relative;flex:0 0 auto;display:flex}
-.rail button.dd{font:inherit;cursor:pointer;text-align:left;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:6px 28px 6px 10px;display:flex;flex-direction:column;gap:1px;min-width:86px;position:relative}
-.rail button.dd::after{content:"";position:absolute;right:10px;top:50%;width:7px;height:7px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:translateY(-70%) rotate(45deg)}
-.rail button.dd[aria-expanded="true"]::after{transform:translateY(-20%) rotate(-135deg)}
-.rail button.dd .n{font:600 .7rem var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-.rail button.dd .r{font:700 1.05rem var(--f-display);letter-spacing:.02em;white-space:nowrap}
-.rail button.dd.cur{border-color:var(--accent);box-shadow:inset 0 -3px 0 var(--accent)}
-.rail button.dd.live{background:var(--strip);border-color:var(--strip-line)}
-.rail button.dd.live .n::after{content:" · LIVE";color:var(--pass)}
-.rail .ddmenu{position:absolute;top:calc(100% + 4px);left:0;z-index:30;background:var(--paper);border:1px solid var(--line);border-radius:6px;box-shadow:0 12px 32px rgba(10,20,30,.25);padding:6px;display:flex;flex-direction:column;gap:4px;min-width:260px;max-width:calc(100vw - 32px)}
-.rail .ddmenu[hidden]{display:none}
-.rail .ddmenu a{flex-direction:row;align-items:center;justify-content:space-between;gap:14px;min-width:0;min-height:44px}
+/* grouped pages (Pages 1-9, VFR): one tab jumps straight in; the group's pages show as a second row below */
+.subrail{display:flex;flex-wrap:wrap;gap:6px;margin-top:-10px;padding:8px;background:var(--paper);border:1px solid var(--line);border-radius:4px}
+.subrail[hidden]{display:none}
+.subrail a{text-decoration:none;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:5px 10px;display:flex;align-items:baseline;gap:8px;min-height:36px}
+.subrail a .n{font:600 .66rem var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.subrail a .n:empty:not(:only-child){display:none}
+.subrail a.live .n:empty{display:inline}
+.subrail a.live .n:empty::after{content:"LIVE"}
+.subrail a .r{font:700 .98rem var(--f-display);letter-spacing:.02em;white-space:nowrap}
+.subrail a:hover{border-color:var(--accent)}
+.subrail a[aria-current="page"]{border-color:var(--accent);box-shadow:inset 0 -3px 0 var(--accent);background:var(--paper)}
+.subrail a.live{background:var(--strip);border-color:var(--strip-line)}
+.subrail a.live .n::after{content:" · LIVE";color:var(--pass)}
 .rail a{flex:0 0 auto;text-decoration:none;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:6px 10px;display:flex;flex-direction:column;gap:1px;min-width:86px}
 .rail a .n{font:600 .7rem var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .rail a .r{font:700 1.05rem var(--f-display);letter-spacing:.02em;white-space:nowrap}
@@ -315,6 +315,7 @@ footer{font-size:.8rem;color:var(--muted)}
   <section class="active" id="active" aria-label="Active configuration"></section>
 
   <nav class="rail" id="rail" aria-label="Playbook pages"></nav>
+  <nav class="subrail" id="subrail" aria-label="Pages in this group" hidden></nav>
 
   <!-- ===================== PAGES ===================== -->
   <section class="page" id="overview" data-page>
@@ -1821,14 +1822,13 @@ function setLivePage(id){
 }
 
 let userPickedPage = !!location.hash && PAGES.some(p => '#' + p.id === location.hash);
-// Grouped pages sit behind one dropdown button each; every other page keeps its own tab.
+// Grouped pages get one tab each, with the group's pages in a second row; every other page keeps its own tab.
 //   cfg: Pages 1-9, the runway configurations (LIVE = state.livePage)
 //   vfr: VFR Departures, one page per SOP departure configuration (LIVE = state.liveVfr)
 const DD_GROUPS = [
   {key:'cfg', ids:['p1','p2','p3','p4','p5','p6','p7','p8','p9'], n:'Pages 1–9', r:'Configurations', live: () => state.livePage},
   {key:'vfr', ids:['v4','v31','v22','v13w','v13c','v13f'], n:'VFR', r:'Departures', live: () => state.liveVfr}
 ];
-let ddOpen = null;  // key of the open group, or null
 // VFR page for the active configuration: by departure runway; runway 13 by the airspace ownership the IFR SID picks use
 function vfrPageFor(ctx){
   if (!ctx || !ctx.pair || !ctx.pair.dep) return null;
@@ -1842,51 +1842,46 @@ function vfrPageFor(ctx){
   if (o.coney) return 'v13c';
   return 'v13f';
 }
+const lastInGroup = {};  // the page last shown in each group, so its tab returns there
 function railLink(p, cur, liveId){
   return '<a href="#' + p.id + '"' + (p.id === cur ? ' aria-current="page"' : '') + (p.id === liveId ? ' class="live"' : '') + '>' +
     '<span class="n">' + esc(p.n) + '</span><span class="r">' + esc(p.r) + '</span></a>';
 }
-function ddButton(g, cur){
-  const inDD = PAGES.filter(p => g.ids.includes(p.id)), liveId = g.live();
-  const shown = inDD.find(p => p.id === cur);   // the page on screen, if it's in this group
-  const live = inDD.find(p => p.id === liveId);  // the page the ATIS points to, if any
-  const face = shown || live, open = ddOpen === g.key;
-  return '<div class="ddwrap">' +
-    '<button type="button" class="dd' + (shown ? ' cur' : '') + (live ? ' live' : '') + '" id="dd-btn-' + g.key + '" data-dd="' + g.key + '" aria-haspopup="true" aria-expanded="' + open + '" aria-controls="dd-menu-' + g.key + '">' +
-    '<span class="n">' + esc(face ? (g.key === 'cfg' ? face.n : g.n) : g.n) + '</span><span class="r">' + esc(face ? face.r : g.r) + '</span></button>' +
-    '<div class="ddmenu" id="dd-menu-' + g.key + '"' + (open ? '' : ' hidden') + '>' + inDD.map(p => railLink(p, cur, liveId)).join('') + '</div></div>';
+// A group's tab goes straight to: the page on screen if it's in the group, else the LIVE page, else the last one viewed, else the first.
+function groupTarget(g, cur){
+  if (g.ids.includes(cur)) return cur;
+  return g.live() || (g.ids.includes(lastInGroup[g.key]) ? lastInGroup[g.key] : g.ids[0]);
+}
+function groupTab(g, cur){
+  const inG = PAGES.filter(p => g.ids.includes(p.id)), liveId = g.live();
+  const shown = inG.find(p => p.id === cur), live = inG.find(p => p.id === liveId);
+  const face = shown || live;
+  const cls = ['grp'].concat(live ? ['live'] : []).join(' ');
+  return '<a href="#' + groupTarget(g, cur) + '" class="' + cls + '"' + (shown ? ' aria-current="page"' : '') + '>' +
+    '<span class="n">' + esc(face && g.key === 'cfg' ? face.n : g.n) + '</span><span class="r">' + esc(face ? face.r : g.r) + '</span></a>';
 }
 function renderRail(){
   const cur = currentPage();
+  const g0 = DD_GROUPS.find(g => g.ids.includes(cur));
+  if (g0) lastInGroup[g0.key] = cur;
   let html = '';
   const placed = new Set();
   PAGES.forEach(p => {
     const g = DD_GROUPS.find(g => g.ids.includes(p.id));
-    if (g){ if (!placed.has(g.key)){ html += ddButton(g, cur); placed.add(g.key); } return; }
+    if (g){ if (!placed.has(g.key)){ html += groupTab(g, cur); placed.add(g.key); } return; }
     html += railLink(p, cur, state.livePage);
   });
   $('rail').innerHTML = html;
+  // second row: the pages of the group on screen
+  const sub = $('subrail');
+  if (g0){
+    const liveId = g0.live();
+    // in the second row the VFR pages drop their repeated "VFR" label
+    sub.innerHTML = PAGES.filter(p => g0.ids.includes(p.id)).map(p => railLink(g0.key === 'vfr' ? {id: p.id, n: '', r: p.r} : p, cur, liveId)).join('');
+    sub.setAttribute('aria-label', g0.key === 'vfr' ? 'VFR Departures pages' : 'Configuration pages');
+    sub.hidden = false;
+  } else { sub.innerHTML = ''; sub.hidden = true; }
 }
-function setDD(key, focusBtn){
-  const prev = ddOpen; ddOpen = key;
-  DD_GROUPS.forEach(g => {
-    const b = $('dd-btn-' + g.key), m = $('dd-menu-' + g.key); if (!b || !m) return;
-    const open = g.key === key;
-    b.setAttribute('aria-expanded', String(open)); m.hidden = !open;
-    if (open){ const a = m.querySelector('[aria-current="page"]') || m.querySelector('a.live') || m.querySelector('a'); if (a) a.focus(); }
-  });
-  if (!key && focusBtn && prev){ const b = $('dd-btn-' + prev); if (b) b.focus(); }
-}
-document.addEventListener('click', e => { if (ddOpen && !e.target.closest('.ddwrap')) setDD(null); });
-document.addEventListener('keydown', e => {
-  if (!ddOpen) return;
-  if (e.key === 'Escape'){ setDD(null, true); return; }
-  if (e.key === 'ArrowDown' || e.key === 'ArrowUp'){
-    const items = [...$('dd-menu-' + ddOpen).querySelectorAll('a')], i = items.indexOf(document.activeElement);
-    const n = e.key === 'ArrowDown' ? (i + 1) % items.length : (i - 1 + items.length) % items.length;
-    items[n].focus(); e.preventDefault();
-  }
-});
 function currentPage(){
   const h = location.hash.slice(1);
   const valid = PAGES.some(p => p.id === h);
@@ -1899,14 +1894,11 @@ function showPage(id, fromHash){
   renderRail();
 }
 window.addEventListener('hashchange', () => { userPickedPage = true; showPage(currentPage(), true); });
-$('rail').addEventListener('click', e => {
-  const ddb = e.target.closest('button[data-dd]');
-  if (ddb){ setDD(ddOpen === ddb.dataset.dd ? null : ddb.dataset.dd); return; }
+['rail', 'subrail'].forEach(id => $(id).addEventListener('click', e => {
   const a = e.target.closest('a[href^="#"]'); if (!a) return;
-  ddOpen = null;
   userPickedPage = true;
   if (a.getAttribute('href') === location.hash){ e.preventDefault(); showPage(location.hash.slice(1), true); }
-});
+}));
 
 function renderAll(){
   ['LGA','JFK'].forEach(renderCard); renderActive(); showPage(currentPage(), true);
