@@ -223,6 +223,7 @@ td.num,.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
 .page ul{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:4px;max-width:80ch}
 .page blockquote{margin:0;padding:8px 12px;border-left:3px solid var(--accent);background:var(--bg);font-family:var(--f-mono);font-size:.85rem}
 .note{font-size:.85rem;color:var(--muted)}
+.gfx{display:block;margin-top:2px;font:500 .72rem var(--f-mono);color:var(--muted);letter-spacing:.02em;line-height:1.4}.gfx b{color:var(--ink);font-weight:700}
 .vfr-type{display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line);padding-top:12px}
 .vfr-sum td{vertical-align:top}
 .taxi-tbl tr.on td{background:var(--strip)}
@@ -1657,6 +1658,18 @@ function wxStr(p){
   return c + ' / ' + v;
 }
 
+/* Exit fixes per departure gate (SOP Valid Exits) */
+const GATE_FIXES = {
+  North:['COATE','NEION','HAAYS','GAYEL','SAX'],
+  East: ['MERIT','GREKI','BAAYS','CMK','BDR'],
+  South:['WHITE','DIXIE','SHIPP','WAVEY'],
+  West: ['BIGGY','LANNA','PARKE','ELIOT','NEWEL','ZIMMZ','SBJ']
+};
+function gateCell(label){
+  const dirs = ['North','East','South','West'].filter(d => new RegExp('\\b' + d + '\\b').test(label));
+  return esc(label) + dirs.map(d => '<span class="gfx">' + (dirs.length > 1 ? '<b>' + d.charAt(0) + '</b> ' : '') + GATE_FIXES[d].join(' ') + '</span>').join('');
+}
+
 /* SID assignment by gate for the current LGA config */
 function sidRows(pair, owns, jfk, lgaP){
   if (!pair || !pair.dep) return [];
@@ -1676,16 +1689,16 @@ function sidRows(pair, owns, jfk, lgaP){
   }
   if (d === '4'){
     if (L === '13') return [['All gates','LaGuardia# except fly heading 070']];
-    return [['West','BRONX climb'],['WHITE (jets)','BRONX climb'],['North / East / South','PELHAM climb']];
+    return [['West','BRONX climb'],['WHITE (jets)','BRONX climb'],['North / East / South (not WHITE jets)','PELHAM climb']];
   }
   if (d === '31'){
     if (L === '4') return [['All gates','LaGuardia# except fly heading 360']];
     if (L === '22') return [['All gates','LaGuardia# except fly heading 355']];
-    if (L === '31') return [['West, WHITE jets','LaGuardia# except fly heading 360'],['All others','LaGuardia# except fly heading 020']];
+    if (L === '31') return [['West, WHITE jets','LaGuardia# except fly heading 360'],['North / East / South (not WHITE jets)','LaGuardia# except fly heading 020']];
   }
   if (d === '22'){
     return owns.coney
-      ? [['South (jets)','HOPEA# (or LaGuardia# except fly heading 190)'],['All others','JUTES#']]
+      ? [['South (jets)','HOPEA# (or LaGuardia# except fly heading 190)'],['North / East / West · South props','JUTES#']]
       : [['All gates','JUTES# (or LaGuardia# as published)']];
   }
   return [];
@@ -1845,7 +1858,7 @@ function renderActive(){
         '<tr><td>EWR runways</td><td class="num">' + (ewr ? 'LDG ' + esc(ewr.land.join(', ') || '—') + ' · DEP ' + esc(ewr.dep.join(', ') || '—') : '—') + '</td></tr>' +
       '</tbody></table></div>' +
       (sids.length ? '<div class="tw"><table><thead><tr><th>Gate</th><th>Assign</th></tr></thead><tbody>' +
-        sids.map(r => '<tr><td>' + esc(r[0]) + '</td><td>' + esc(r[1]) + '</td></tr>').join('') +
+        sids.map(r => '<tr><td>' + gateCell(r[0]) + '</td><td>' + esc(r[1]) + '</td></tr>').join('') +
         '</tbody></table></div><p class="note">Initial altitude 5,000 ft. DIXIE via the JFK VOR when departing 4 or 31, or without Coney.</p>' : '') +
     '</div>';
   setLivePage(pageId);
